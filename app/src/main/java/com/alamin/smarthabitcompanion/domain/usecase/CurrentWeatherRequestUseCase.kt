@@ -7,10 +7,10 @@ import com.alamin.smarthabitcompanion.domain.repository.WeatherRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class CurrentWeatherUseCase @Inject constructor(
+class CurrentWeatherRequestUseCase @Inject constructor(
     private val repository: WeatherRepository
 ) {
-    suspend operator fun invoke(): Flow<Weather?> {
-     return repository.getCurrentWeather()
+    suspend operator fun invoke(param: CurrentWeatherRequestParam): Result<Weather> {
+     return repository.requestCurrentWeather(param)
     }
 }

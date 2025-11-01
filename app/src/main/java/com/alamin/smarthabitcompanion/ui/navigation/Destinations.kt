@@ -1,5 +1,8 @@
 package com.alamin.smarthabitcompanion.ui.navigation
 
-enum class Destinations {
+import kotlinx.serialization.Serializable
 
+sealed class Destinations {
+    @Serializable
+    data object Home: Destinations()
 }

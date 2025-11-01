@@ -3,26 +3,76 @@ package com.alamin.smarthabitcompanion.ui.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alamin.smarthabitcompanion.core.network.ServerConstants
+import com.alamin.smarthabitcompanion.core.utils.Result
+import com.alamin.smarthabitcompanion.core.utils.extension.getMessage
 import com.alamin.smarthabitcompanion.domain.model.CurrentWeatherRequestParam
+import com.alamin.smarthabitcompanion.domain.model.Weather
+import com.alamin.smarthabitcompanion.domain.usecase.CurrentWeatherRequestUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.CurrentWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val currentWeatherUseCase: CurrentWeatherUseCase): ViewModel() {
+class HomeViewModel @Inject constructor(private val currentWeatherRequestUseCase: CurrentWeatherRequestUseCase,private val currentWeatherUseCase: CurrentWeatherUseCase) :
+    ViewModel() {
+        private val mutableUIState = MutableStateFlow(UIState())
+        val uiState: StateFlow<UIState> = mutableUIState
+
+
+
 
     init {
-       requestCurrentWeather()
+        requestCurrentWeather()
+        observeWeatherData()
     }
 
-    fun requestCurrentWeather(){
+    private fun observeWeatherData() {
         viewModelScope.launch (Dispatchers.IO){
+            currentWeatherUseCase.invoke().stateIn(viewModelScope,
+                SharingStarted.WhileSubscribed(),null).collectLatest{
+                it?.let {
+                    updateUIState(uiState.value.copy(weather = it))
+                }
+            }
+        }
+    }
+
+    fun updateUIState(uiState: UIState) {
+        mutableUIState.update { uiState }
+    }
+
+
+    fun requestCurrentWeather() {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutableUIState.update { it.copy(isLoading = true) }
             val weatherRequestParam = CurrentWeatherRequestParam("Dhaka", ServerConstants.API_KEY)
-            currentWeatherUseCase.invoke(weatherRequestParam)
+            mutableUIState.update {
+                when(val result =  currentWeatherRequestUseCase.invoke(weatherRequestParam)){
+                    is Result.Error -> {
+                        it.copy(isLoading = false,errorMessage = result.exception.getMessage())
+                    }
+                    is Result.Success<Weather> -> {
+                        it.copy(isLoading = false)
+                    }
+                }
+            }
         }
     }
 
 
 }
+
+data class UIState(
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val successMessage: String? = null,
+    val weather: Weather ? = null
+)

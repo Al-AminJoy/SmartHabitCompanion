@@ -11,12 +11,14 @@ import com.alamin.smarthabitcompanion.data.remote.dto.WeatherResponseDto
 import com.alamin.smarthabitcompanion.domain.model.CurrentWeatherRequestParam
 import com.alamin.smarthabitcompanion.domain.model.Weather
 import com.alamin.smarthabitcompanion.domain.repository.WeatherRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
     private val apiService: APIService, private val weatherDao: WeatherDao
 ) : WeatherRepository {
-    override suspend fun getCurrentWeather(param: CurrentWeatherRequestParam): Result<Weather> {
+    override suspend fun requestCurrentWeather(param: CurrentWeatherRequestParam): Result<Weather> {
         return try {
             val response = apiService.getCurrentWeather(param.city, param.key)
 
@@ -30,5 +32,9 @@ class WeatherRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.Error(e.getSpecificException())
         }
+    }
+
+    override suspend fun getCurrentWeather(): Flow<Weather?> {
+        return weatherDao.getWeather().map { it?.toWeather() }
     }
 }
