@@ -13,6 +13,7 @@ fun <T> Response<T>.getException(): AppException {
         if (this.body() == null) {
             AppException.OthersException("Response body is null")
         } else {
+            Logger.log(TAG, "getException: ${this}")
             if (this.isSuccessful && this.body() != null && this.body() is Boolean) {
                 AppException.OthersException("Something went wrong, please try again later")
             } else {
