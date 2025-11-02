@@ -8,22 +8,36 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.FormatListBulleted
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.alamin.smarthabitcompanion.ui.navigation.NavGraph
+import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
 import com.alamin.smarthabitcompanion.ui.theme.SmartHabitCompanionTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,6 +50,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel = viewModel<MainActivityViewModel>()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val navController = rememberNavController()
+            val startDestination = NavigationDestinations.HOME
+            var selectedNavigationDestination by rememberSaveable {
+                mutableIntStateOf(
+                    startDestination.ordinal
+                )
+            }
 
             SmartHabitCompanionTheme(darkTheme = false) {
                 Scaffold(topBar = {
@@ -44,15 +65,45 @@ class MainActivity : ComponentActivity() {
                             Text(uiState.title)
                         }, actions = {
                             IconButton(onClick = {}) {
-                                Icon(Icons.Default.Menu,contentDescription = null)
+                                Icon(Icons.Default.Menu, contentDescription = null)
                             }
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                      //  colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
                     )
 
-                },modifier = Modifier.fillMaxSize()) { innerPadding ->
+                }, bottomBar = {
+                    NavigationBar(
+                        windowInsets = NavigationBarDefaults.windowInsets,
+                    ) {
+
+                        NavigationDestinations.entries.forEachIndexed { index, destination ->
+                            val selected = index == selectedNavigationDestination
+
+                            NavigationBarItem(
+                                selected = selected,
+                                onClick = {
+                                    selectedNavigationDestination = index
+                                },
+                                icon = {
+                                    Icon(
+                                        if (selected) {
+                                            destination.selectedIcon
+                                        } else {
+                                            destination.icon
+                                        }, contentDescription = destination.value
+                                    )
+
+                                }, label = {
+                                    Text(text = destination.value)
+                                }
+                            )
+
+                        }
+
+                    }
+                }, modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        App(viewModel)
+                        App(viewModel, navController)
                     }
                 }
             }
@@ -61,8 +112,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun App(viewModel: MainActivityViewModel) {
-val navController = rememberNavController()
+fun App(viewModel: MainActivityViewModel, navController: NavHostController) {
     NavGraph(navController = navController, mainViewModel = viewModel)
 }
 
