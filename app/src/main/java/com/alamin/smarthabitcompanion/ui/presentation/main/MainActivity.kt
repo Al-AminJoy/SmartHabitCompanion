@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.alamin.smarthabitcompanion.ui.navigation.Destinations
 import com.alamin.smarthabitcompanion.ui.navigation.NavGraph
 import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
 import com.alamin.smarthabitcompanion.ui.theme.SmartHabitCompanionTheme
@@ -72,34 +73,47 @@ class MainActivity : ComponentActivity() {
                     )
 
                 }, bottomBar = {
-                    NavigationBar(
-                        windowInsets = NavigationBarDefaults.windowInsets,
-                    ) {
+                    if (uiState.title.equals(NavigationDestinations.HOME.value,true) || uiState.title.equals(NavigationDestinations.HABITS.value,true)|| uiState.title.equals(NavigationDestinations.PROFILE.value,true) ){
+                        NavigationBar(
+                            windowInsets = NavigationBarDefaults.windowInsets,
+                        ) {
 
-                        NavigationDestinations.entries.forEachIndexed { index, destination ->
-                            val selected = index == selectedNavigationDestination
+                            NavigationDestinations.entries.forEachIndexed { index, destination ->
+                                val selected = index == selectedNavigationDestination
 
-                            NavigationBarItem(
-                                selected = selected,
-                                onClick = {
-                                    selectedNavigationDestination = index
-                                },
-                                icon = {
-                                    Icon(
-                                        if (selected) {
-                                            destination.selectedIcon
-                                        } else {
-                                            destination.icon
-                                        }, contentDescription = destination.value
-                                    )
+                                NavigationBarItem(
+                                    selected = selected,
+                                    onClick = {
+                                        selectedNavigationDestination = index
+                                        when(selectedNavigationDestination){
+                                            0 -> {
+                                                navController.navigate(Destinations.Home)
+                                            }
+                                            1 -> {
+                                                navController.navigate(Destinations.Habits)
+                                            }
+                                            2 -> {
+                                                navController.navigate(Destinations.Profile)
+                                            }
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            if (selected) {
+                                                destination.selectedIcon
+                                            } else {
+                                                destination.icon
+                                            }, contentDescription = destination.value
+                                        )
 
-                                }, label = {
-                                    Text(text = destination.value)
-                                }
-                            )
+                                    }, label = {
+                                        Text(text = destination.value)
+                                    }
+                                )
+
+                            }
 
                         }
-
                     }
                 }, modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {

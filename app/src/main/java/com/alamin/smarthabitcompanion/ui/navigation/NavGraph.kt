@@ -5,8 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.alamin.smarthabitcompanion.ui.presentation.habits.HabitsScreen
 import com.alamin.smarthabitcompanion.ui.presentation.home.HomeScreen
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
+import com.alamin.smarthabitcompanion.ui.presentation.profile.ProfileScreen
 
 @Composable
 fun NavGraph(navController: NavHostController, mainViewModel: MainActivityViewModel, startDestination: Destinations = Destinations.Home) {
@@ -16,6 +18,13 @@ fun NavGraph(navController: NavHostController, mainViewModel: MainActivityViewMo
             HomeScreen(mainViewModel){
 
             }
+        }
+        composable<Destinations.Habits> {
+            HabitsScreen(sharedViewModel = mainViewModel, toAddHabit = {}, toHabitDetails = {})
+        }
+
+        composable<Destinations.Profile> {
+            ProfileScreen(sharedViewModel = mainViewModel) { }
         }
     }
 }

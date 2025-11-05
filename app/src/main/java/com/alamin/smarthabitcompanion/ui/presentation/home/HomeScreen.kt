@@ -39,6 +39,7 @@ import coil.compose.AsyncImage
 import com.alamin.smarthabitcompanion.core.network.ServerConstants
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.domain.model.Weather
+import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
 import com.alamin.smarthabitcompanion.ui.presentation.components.buildImageRequest
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
 import com.alamin.smarthabitcompanion.ui.theme.BasketBallOrange
@@ -64,7 +65,7 @@ fun HomeScreen(
 
 
     LaunchedEffect(Unit) {
-        sharedViewModel.updateTitle("Smart Habit Companion")
+        sharedViewModel.updateTitle(NavigationDestinations.HOME.value)
     }
 
     Surface(modifier = Modifier.fillMaxSize()) {
