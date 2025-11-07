@@ -13,6 +13,8 @@ interface HabitRecordDao {
     @Query("SELECT * FROM HabitRecordEntity WHERE date = :date")
     fun getRecordsByDate(date: String): Flow<List<HabitRecordEntity>>
 
+    @Query("SELECT * FROM HabitRecordEntity WHERE habitId = :habitId AND date = :date")
+    fun getRecordByHabitIdAndDate(habitId: Int, date: String): Flow<HabitRecordEntity?>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecord(record: HabitRecordEntity)
 
