@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.data.local.AppDatabase
+import com.alamin.smarthabitcompanion.data.local.dao.HabitDao
+import com.alamin.smarthabitcompanion.data.local.dao.HabitRecordDao
 import com.alamin.smarthabitcompanion.data.local.dao.WeatherDao
 import dagger.Module
 import dagger.Provides
@@ -27,5 +29,14 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideWeatherDao(appDatabase: AppDatabase): WeatherDao = appDatabase.weatherDao()
+
+    @Provides
+    @Singleton
+    fun provideHabitDao(appDatabase: AppDatabase): HabitDao = appDatabase.habitDao()
+
+    @Provides
+    @Singleton
+    fun provideHabitRecordDao(appDatabase: AppDatabase): HabitRecordDao = appDatabase.habitRecordDao()
+
 
 }

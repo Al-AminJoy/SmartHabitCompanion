@@ -1,5 +1,8 @@
 package com.alamin.smarthabitcompanion.ui.presentation.habits
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -16,5 +19,9 @@ fun HabitsScreen(
 ) {
     LaunchedEffect(Unit) {
         sharedViewModel.updateTitle(NavigationDestinations.HABITS.value)
+    }
+
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+
     }
 }

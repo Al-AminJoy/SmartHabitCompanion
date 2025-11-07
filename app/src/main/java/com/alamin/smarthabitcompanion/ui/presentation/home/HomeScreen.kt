@@ -118,11 +118,14 @@ fun WeatherInfo(weather: Weather = dummyWeather, modifier: Modifier = Modifier) 
                 .background(
                     Brush.horizontalGradient(
                         listOf(
-                            BasketBallOrange.copy(alpha = .60f),
-                             SunYellow, White,MaterialTheme.colorScheme.primary.copy(
-                                alpha = .2f
+                           MaterialTheme.colorScheme.primary.copy(
+                                alpha = .5f
+                            ),MaterialTheme.colorScheme.primary.copy(
+                                alpha = .4f
                             ),MaterialTheme.colorScheme.primary.copy(
                                 alpha = .3f
+                            ),MaterialTheme.colorScheme.primary.copy(
+                                alpha = .2f
                             )
                         )
                     )
@@ -144,7 +147,7 @@ fun WeatherInfo(weather: Weather = dummyWeather, modifier: Modifier = Modifier) 
                 )
             }
 
-            Column {
+            Column (horizontalAlignment = Alignment.CenterHorizontally){
                 Box(modifier = Modifier.size(80.dp), contentAlignment = Alignment.Center) {
                     if (weather.icon != null) {
                         AsyncImage(
