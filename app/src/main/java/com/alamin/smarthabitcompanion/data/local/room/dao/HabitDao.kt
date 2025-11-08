@@ -1,4 +1,4 @@
-package com.alamin.smarthabitcompanion.data.local.dao
+package com.alamin.smarthabitcompanion.data.local.room.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -7,8 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.alamin.smarthabitcompanion.data.local.entity.HabitEntity
-import com.alamin.smarthabitcompanion.data.local.relation.HabitWithRecord
+import com.alamin.smarthabitcompanion.data.local.room.entity.HabitEntity
+import com.alamin.smarthabitcompanion.data.local.room.relation.HabitWithRecord
 import kotlinx.coroutines.flow.Flow
 
 @Dao

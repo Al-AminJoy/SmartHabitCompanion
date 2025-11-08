@@ -2,12 +2,11 @@ package com.alamin.smarthabitcompanion.data.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
-import com.alamin.smarthabitcompanion.data.local.AppDatabase
-import com.alamin.smarthabitcompanion.data.local.dao.HabitDao
-import com.alamin.smarthabitcompanion.data.local.dao.HabitRecordDao
-import com.alamin.smarthabitcompanion.data.local.dao.WeatherDao
+import com.alamin.smarthabitcompanion.data.local.room.AppDatabase
+import com.alamin.smarthabitcompanion.data.local.room.dao.HabitDao
+import com.alamin.smarthabitcompanion.data.local.room.dao.HabitRecordDao
+import com.alamin.smarthabitcompanion.data.local.room.dao.WeatherDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

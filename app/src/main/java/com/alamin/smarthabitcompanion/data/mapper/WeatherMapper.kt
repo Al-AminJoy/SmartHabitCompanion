@@ -1,6 +1,6 @@
 package com.alamin.smarthabitcompanion.data.mapper
 
-import com.alamin.smarthabitcompanion.data.local.entity.WeatherEntity
+import com.alamin.smarthabitcompanion.data.local.room.entity.WeatherEntity
 import com.alamin.smarthabitcompanion.data.remote.dto.WeatherResponseDto
 import com.alamin.smarthabitcompanion.domain.model.Weather
 

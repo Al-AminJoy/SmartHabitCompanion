@@ -4,10 +4,9 @@ import com.alamin.smarthabitcompanion.core.network.APIService
 import com.alamin.smarthabitcompanion.core.utils.Result
 import com.alamin.smarthabitcompanion.core.utils.extension.getException
 import com.alamin.smarthabitcompanion.core.utils.extension.getSpecificException
-import com.alamin.smarthabitcompanion.data.local.dao.WeatherDao
+import com.alamin.smarthabitcompanion.data.local.room.dao.WeatherDao
 import com.alamin.smarthabitcompanion.data.mapper.toWeather
 import com.alamin.smarthabitcompanion.data.mapper.toWeatherEntity
-import com.alamin.smarthabitcompanion.data.remote.dto.WeatherResponseDto
 import com.alamin.smarthabitcompanion.domain.model.CurrentWeatherRequestParam
 import com.alamin.smarthabitcompanion.domain.model.Weather
 import com.alamin.smarthabitcompanion.domain.repository.WeatherRepository

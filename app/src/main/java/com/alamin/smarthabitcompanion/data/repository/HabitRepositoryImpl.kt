@@ -1,7 +1,7 @@
 package com.alamin.smarthabitcompanion.data.repository
 
-import com.alamin.smarthabitcompanion.data.local.dao.HabitDao
-import com.alamin.smarthabitcompanion.data.local.dao.HabitRecordDao
+import com.alamin.smarthabitcompanion.data.local.room.dao.HabitDao
+import com.alamin.smarthabitcompanion.data.local.room.dao.HabitRecordDao
 import com.alamin.smarthabitcompanion.data.mapper.toDomain
 import com.alamin.smarthabitcompanion.data.mapper.toEntity
 import com.alamin.smarthabitcompanion.domain.model.Habit

@@ -1,4 +1,4 @@
-package com.alamin.smarthabitcompanion.data.local.entity
+package com.alamin.smarthabitcompanion.data.local.room.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

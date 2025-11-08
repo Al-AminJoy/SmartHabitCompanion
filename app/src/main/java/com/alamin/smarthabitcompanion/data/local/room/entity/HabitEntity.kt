@@ -1,4 +1,4 @@
-package com.alamin.smarthabitcompanion.data.local.entity
+package com.alamin.smarthabitcompanion.data.local.room.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -9,6 +9,6 @@ data class HabitEntity(
     val id: Int = 0,
     val name: String,
     val target: Int?,
-    val targetUnit: Int?,
+    val targetUnit: String?,
     val streakCount: Int = 0
 )

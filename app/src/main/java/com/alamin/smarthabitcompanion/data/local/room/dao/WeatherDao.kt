@@ -1,10 +1,11 @@
-package com.alamin.smarthabitcompanion.data.local.dao
+package com.alamin.smarthabitcompanion.data.local.room.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.alamin.smarthabitcompanion.data.local.entity.WeatherEntity
+import androidx.room.Transaction
+import com.alamin.smarthabitcompanion.data.local.room.entity.WeatherEntity
 import com.alamin.smarthabitcompanion.domain.model.Weather
 import kotlinx.coroutines.flow.Flow
 
@@ -22,6 +23,7 @@ interface WeatherDao {
     @Query("DELETE FROM WeatherEntity")
     fun deleteWeather()
 
+    @Transaction
     suspend fun deleteAndInsertWeather(weather: WeatherEntity) {
         deleteWeather()
         insert(weather)

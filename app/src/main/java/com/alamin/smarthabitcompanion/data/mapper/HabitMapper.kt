@@ -1,8 +1,8 @@
 package com.alamin.smarthabitcompanion.data.mapper
 
-import com.alamin.smarthabitcompanion.data.local.entity.HabitEntity
-import com.alamin.smarthabitcompanion.data.local.entity.HabitRecordEntity
-import com.alamin.smarthabitcompanion.data.local.relation.HabitWithRecord
+import com.alamin.smarthabitcompanion.data.local.room.entity.HabitEntity
+import com.alamin.smarthabitcompanion.data.local.room.entity.HabitRecordEntity
+import com.alamin.smarthabitcompanion.data.local.room.relation.HabitWithRecord
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.model.HabitRecord
 import java.time.LocalDate
