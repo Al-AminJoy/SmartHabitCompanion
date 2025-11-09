@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
+import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
 import com.alamin.smarthabitcompanion.ui.presentation.components.HabitItem
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
@@ -31,7 +32,7 @@ fun HabitsScreen(
     sharedViewModel: MainActivityViewModel,
     viewModel: HabitsScreenViewModel = hiltViewModel(),
     toAddHabit: () -> Unit,
-    toHabitDetails: (Int) -> Unit
+    toHabitDetails: (Habit) -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

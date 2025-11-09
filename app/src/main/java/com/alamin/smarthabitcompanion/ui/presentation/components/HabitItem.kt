@@ -21,12 +21,12 @@ import com.alamin.smarthabitcompanion.domain.model.Habit
 fun HabitItem(
     habit: Habit = Habit(1, "Drink Water", 5, "Glass", 1),
     modifier: Modifier = Modifier,
-    toHabitDetails: (Int) -> Unit = {}
+    toHabitDetails: (Habit) -> Unit = {}
 ) {
     ElevatedCard(
         shape = MaterialTheme.shapes.medium,
         modifier = modifier.clickable {
-            toHabitDetails(habit.id)
+            toHabitDetails(habit)
         },
     ) {
         Column(modifier = Modifier
