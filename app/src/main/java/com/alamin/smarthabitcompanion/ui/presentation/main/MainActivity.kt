@@ -119,7 +119,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }, floatingActionButton = {
                     if (uiState.title.equals(NavigationDestinations.HABITS.value,true)){
-                        FloatingActionButton(onClick = { /*TODO*/ }) {
+                        FloatingActionButton(onClick = {
+                            viewModel.updateAddHabitDialog(true)
+                        }) {
                             Icon(Icons.Outlined.Add, contentDescription = null)
                         }
                     }

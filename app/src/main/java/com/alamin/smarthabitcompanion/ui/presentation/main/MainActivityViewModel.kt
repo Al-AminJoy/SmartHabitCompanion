@@ -45,9 +45,14 @@ class MainActivityViewModel @Inject constructor(
         mutableUiState.update { it.copy(title = title) }
     }
 
+    fun updateAddHabitDialog(showDialog: Boolean) {
+        mutableUiState.update { it.copy(showAddHabitDialog = showDialog) }
+    }
+
 }
 
 data class UISate(
     val isLoading: Boolean = false,
-    val title: String = ""
+    val title: String = "",
+    val showAddHabitDialog: Boolean = false
 )

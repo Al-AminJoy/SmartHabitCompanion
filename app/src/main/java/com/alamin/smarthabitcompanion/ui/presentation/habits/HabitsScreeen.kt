@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
+import com.alamin.smarthabitcompanion.ui.presentation.components.AddHabitDialog
 import com.alamin.smarthabitcompanion.ui.presentation.components.HabitItem
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
 
@@ -36,6 +37,7 @@ fun HabitsScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val sharedUiState by sharedViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -44,22 +46,52 @@ fun HabitsScreen(
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
-        if (uiState.habits.isNotEmpty()){
-            LazyVerticalGrid(columns = GridCells.Fixed(2), contentPadding = PaddingValues(
-                (AppConstants.APP_MARGIN).dp), horizontalArrangement = Arrangement.spacedBy(
-                AppConstants.APP_MARGIN.dp), verticalArrangement = Arrangement.spacedBy((AppConstants.APP_MARGIN).dp)) {
-                items(uiState.habits.size){ index ->
+        if (uiState.habits.isNotEmpty()) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2), contentPadding = PaddingValues(
+                    (AppConstants.APP_MARGIN).dp
+                ), horizontalArrangement = Arrangement.spacedBy(
+                    AppConstants.APP_MARGIN.dp
+                ), verticalArrangement = Arrangement.spacedBy((AppConstants.APP_MARGIN).dp)
+            ) {
+                items(uiState.habits.size) { index ->
                     val habit = uiState.habits[index]
-                    HabitItem(habit,Modifier.fillMaxWidth(),toHabitDetails = toHabitDetails)
+                    HabitItem(habit, Modifier.fillMaxWidth(), toHabitDetails = toHabitDetails)
                 }
             }
         }
 
         LaunchedEffect(uiState.message) {
-            val message= uiState.message
+            val message = uiState.message
             if (message != null) {
-                Toast.makeText(context, message.second , Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, message.second, Toast.LENGTH_SHORT).show()
+                viewModel.messageShown()
             }
+        }
+
+        if (sharedUiState.showAddHabitDialog) {
+            AddHabitDialog(
+                modifier = Modifier.fillMaxWidth(),
+                habitName = uiState.habitName,
+                habitTarget = uiState.target,
+                uiState.targetUnit,
+                onChangeHabitName = {
+                    viewModel.onNameChange(it)
+                },
+                onChangeHabitTarget = {
+                    viewModel.onTargetChange(it)
+                },
+                onChangeHabitUnit = {
+                    viewModel.onTargetUnitChange(it)
+                },
+                onAddHabit = {
+                    viewModel.addHabit(onAddHabit = {
+                        sharedViewModel.updateAddHabitDialog(false)
+                    })
+                },
+                onDismiss = {
+                    sharedViewModel.updateAddHabitDialog(false)
+                })
         }
 
     }
