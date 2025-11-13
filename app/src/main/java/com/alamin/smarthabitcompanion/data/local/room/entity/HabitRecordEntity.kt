@@ -17,5 +17,4 @@ data class HabitRecordEntity(
     val habitId: Int,
     val date: String,
     val progress: Int,
-    val isCompleted: Boolean
 )

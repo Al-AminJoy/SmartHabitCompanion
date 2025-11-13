@@ -7,5 +7,4 @@ data class HabitRecord(
     val habitId: Int,
     val date: LocalDate,
     val progress: Int,
-    val isCompleted: Boolean
 )

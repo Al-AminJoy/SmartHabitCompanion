@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
+import com.alamin.smarthabitcompanion.ui.theme.DarkGray
 import com.alamin.smarthabitcompanion.ui.theme.GreenApple
 import com.alamin.smarthabitcompanion.ui.theme.LightGrey
 
@@ -120,7 +121,7 @@ fun AddHabitDialog(
                         onDismiss()
                     },
                     colors = ButtonDefaults.textButtonColors(
-                        containerColor = LightGrey,
+                        containerColor = DarkGray,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     modifier = Modifier

@@ -12,7 +12,8 @@ class AddHabitUseCase @Inject constructor(private val habitRepository: HabitRepo
             name = addHabitParam.name,
             target = addHabitParam.target,
             targetUnit = addHabitParam.targetUnit,
-            streakCount = 0
+            streakCount = 0,
+            isCompleted = false
         )
         habitRepository.addHabit(habit)
     }

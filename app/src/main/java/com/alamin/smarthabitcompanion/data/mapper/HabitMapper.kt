@@ -12,7 +12,8 @@ fun Habit.toEntity(): HabitEntity {
         name = this.name,
         target = this.target,
         targetUnit = this.targetUnit,
-        streakCount = this.streakCount
+        streakCount = this.streakCount,
+        isCompleted = this.isCompleted
     )
 }
 
@@ -21,7 +22,6 @@ fun HabitRecord.toEntity(): HabitRecordEntity{
         habitId = this.habitId,
         date = this.date.toString(),
         progress = this.progress,
-        isCompleted = this.isCompleted
     )
 }
 fun HabitRecordEntity.toDomain(): HabitRecord {
@@ -30,7 +30,6 @@ fun HabitRecordEntity.toDomain(): HabitRecord {
         habitId = this.habitId,
         date = LocalDate.parse(this.date),
         progress = this.progress,
-        isCompleted = this.isCompleted
     )
 }
 
@@ -41,6 +40,7 @@ fun HabitWithRecord.toDomain(): Habit{
         target = this.habit.target,
         targetUnit = this.habit.targetUnit,
         streakCount = this.habit.streakCount,
+        isCompleted = this.habit.isCompleted,
         habitRecords = this.records.map { it.toDomain() }
     )
 }

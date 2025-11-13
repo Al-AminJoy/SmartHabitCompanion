@@ -23,13 +23,11 @@ class AddRecordUseCase @Inject constructor(private val habitRepository: HabitRep
                 habitId = addRecordParam.habitId,
                 date = LocalDate.now(),
                 progress = 0,
-                isCompleted = false
             )
             habitRepository.addRecord(record)
         } else {
             val record = todayRecord.copy(
                 progress = todayRecord.progress + addRecordParam.progress,
-                isCompleted =   todayRecord.progress >= (habit?.target?:0)
             )
 
             habitRepository.updateRecord(record)

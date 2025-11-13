@@ -3,8 +3,10 @@ package com.alamin.smarthabitcompanion.ui.presentation.habits
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
@@ -47,16 +49,11 @@ fun HabitsScreen(
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
         if (uiState.habits.isNotEmpty()) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2), contentPadding = PaddingValues(
-                    (AppConstants.APP_MARGIN).dp
-                ), horizontalArrangement = Arrangement.spacedBy(
-                    AppConstants.APP_MARGIN.dp
-                ), verticalArrangement = Arrangement.spacedBy((AppConstants.APP_MARGIN).dp)
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxWidth().padding(horizontal = AppConstants.APP_MARGIN.dp)) {
                 items(uiState.habits.size) { index ->
                     val habit = uiState.habits[index]
                     HabitItem(habit, Modifier.fillMaxWidth(), toHabitDetails = toHabitDetails)
+                    Spacer(modifier = Modifier.padding(vertical = (AppConstants.APP_MARGIN/2).dp))
                 }
             }
         }
