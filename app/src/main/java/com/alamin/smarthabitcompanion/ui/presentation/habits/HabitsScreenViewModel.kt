@@ -2,6 +2,7 @@ package com.alamin.smarthabitcompanion.ui.presentation.habits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.domain.model.AddHabitParam
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.usecase.AddHabitUseCase
@@ -43,8 +44,12 @@ class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: Ge
         mutableUiSate.update { it.copy(habitName = value) }
     }
 
-    fun onTargetChange(value: Int) {
+    fun onTargetChange(value: String) {
         mutableUiSate.update { it.copy(target = value) }
+    }
+
+    fun clearHabitInput() {
+        mutableUiSate.update { it.copy(habitName = "", target = "", targetUnit = "") }
     }
 
     fun onTargetUnitChange(value: String) {
@@ -54,11 +59,17 @@ class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: Ge
     fun addHabit(onAddHabit: () -> Unit) {
         viewModelScope.launch {
             val state = uiState.value
-
             if (state.habitName.isEmpty()){
                 mutableUiSate.update { it.copy(message = Pair(false, "Please Enter a Habit Name")) }
+            }else if (state.habitName.length > AppConstants.ADD_HABIT_NAME_TEXT_LIMIT){
+                mutableUiSate.update { it.copy(message = Pair(false, "Habit Name is Too Long")) }
+            }else if (state.target.length > AppConstants.ADD_HABIT_TARGET_TEXT_LIMIT){
+                mutableUiSate.update { it.copy(message = Pair(false, "Habit Target is Too Long")) }
+            }else if (state.targetUnit.length > AppConstants.ADD_HABIT_UNIT_TEXT_LIMIT){
+                mutableUiSate.update { it.copy(message = Pair(false, "Habit Target Unit Text is Too Long")) }
             }else{
-                addHabitUseCase.invoke(AddHabitParam(state.habitName,state.target,state.targetUnit))
+                addHabitUseCase.invoke(AddHabitParam(state.habitName,state.target.toIntOrNull(),state.targetUnit))
+                clearHabitInput()
                 onAddHabit()
             }
         }
@@ -76,7 +87,7 @@ data class UiState(
     val message: Pair<Boolean, String> ? = null,
     val showAddHabitDialog: Boolean = false,
     val habitName: String = "",
-    val target: Int = 0,
+    val target: String = "",
     val targetUnit: String = "",
     val habits: List<Habit> = emptyList()
 )

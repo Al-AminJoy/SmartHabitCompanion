@@ -24,6 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,10 +41,10 @@ import com.alamin.smarthabitcompanion.ui.theme.LightGrey
 fun AddHabitDialog(
     modifier: Modifier = Modifier,
     habitName: String = "",
-    habitTarget: Int = 0,
+    habitTarget: String = "",
     habitUnit: String = "",
     onChangeHabitName: (String) -> Unit = {},
-    onChangeHabitTarget: (Int) -> Unit = {},
+    onChangeHabitTarget: (String) -> Unit = {},
     onChangeHabitUnit: (String) -> Unit = {},
     onAddHabit: () -> Unit = {},
     onDismiss: () -> Unit = {}
@@ -51,6 +53,8 @@ fun AddHabitDialog(
         onDismissRequest = { onDismiss() },
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
+
+        val focusManager = LocalFocusManager.current
 
         Column(
             modifier = modifier
@@ -78,19 +82,40 @@ fun AddHabitDialog(
             }
 
             Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
-            HabitInput("Habit Name", habitName, "eg. Exercise", textLimit = 24, onValueChange = onChangeHabitName)
+            HabitInput(
+                "Habit Name",
+                habitName,
+                "eg. Exercise",
+                focusManager = focusManager,
+                textLimit = AppConstants.ADD_HABIT_NAME_TEXT_LIMIT,
+                onValueChange = onChangeHabitName
+            )
             Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-            HabitInput("Target", habitTarget.toString(), "eg. 10", textLimit = 6, isNumber = true, onValueChange = {
-                onChangeHabitTarget(it.toIntOrNull() ?: 0)
-            })
+            HabitInput(
+                "Target",
+                habitTarget.toString(),
+                "eg. 10",
+                focusManager = focusManager,
+                textLimit = AppConstants.ADD_HABIT_TARGET_TEXT_LIMIT,
+                isNumber = true,
+                onValueChange = {
+                    onChangeHabitTarget(it)
+                })
             Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-            HabitInput("Target Unit", habitUnit, "eg. Minute", textLimit = 16, onValueChange = onChangeHabitUnit)
+            HabitInput(
+                "Target Unit",
+                habitUnit,
+                "eg. Minute",
+                focusManager = focusManager,
+                textLimit = AppConstants.ADD_HABIT_UNIT_TEXT_LIMIT,
+                onValueChange = onChangeHabitUnit
+            )
             Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
             Row {
                 TextButton(
                     onClick = {
                         onChangeHabitName("")
-                        onChangeHabitTarget(0)
+                        onChangeHabitTarget("")
                         onChangeHabitUnit("")
                         onDismiss()
                     },
@@ -125,7 +150,15 @@ fun AddHabitDialog(
 }
 
 @Composable
-fun HabitInput(title: String, value: String, hint: String,textLimit:Int=0, isNumber: Boolean = false, onValueChange: (String) -> Unit) {
+fun HabitInput(
+    title: String,
+    value: String,
+    hint: String,
+    textLimit: Int = 0,
+    focusManager: FocusManager,
+    isNumber: Boolean = false,
+    onValueChange: (String) -> Unit
+) {
     Text(title, style = MaterialTheme.typography.labelMedium)
     Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
     BasicTextField(
@@ -135,26 +168,29 @@ fun HabitInput(title: String, value: String, hint: String,textLimit:Int=0, isNum
             .fillMaxWidth()
             .border(
                 1.dp,
-                if (value.length <= textLimit){
+                if (value.length <= textLimit) {
                     MaterialTheme.colorScheme.onSurface
-                }else {
+                } else {
                     MaterialTheme.colorScheme.error
                 }, MaterialTheme.shapes.small
             )
             .padding(
-                horizontal = (AppConstants.APP_MARGIN+4).dp,
-                vertical = (AppConstants.APP_MARGIN+4).dp
+                horizontal = (AppConstants.APP_MARGIN + 4).dp,
+                vertical = (AppConstants.APP_MARGIN + 4).dp
             ),
         keyboardActions = KeyboardActions(onDone = {
             onValueChange(value)
+            focusManager.clearFocus()
         }),
         keyboardOptions = KeyboardOptions(keyboardType = if (isNumber) KeyboardType.Number else KeyboardType.Text),
         singleLine = true,
-        textStyle = MaterialTheme.typography.bodyMedium.copy(color = if (value.length <= textLimit){
-            MaterialTheme.colorScheme.onSurface
-        }else {
-            MaterialTheme.colorScheme.error
-        }),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            color = if (value.length <= textLimit) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.error
+            }
+        ),
         decorationBox = { innerTextField ->
             if (value.isEmpty()) {
                 Text(hint, style = MaterialTheme.typography.bodyMedium)
