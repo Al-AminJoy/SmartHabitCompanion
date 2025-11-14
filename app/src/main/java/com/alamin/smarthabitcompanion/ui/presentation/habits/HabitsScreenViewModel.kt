@@ -11,6 +11,7 @@ import com.alamin.smarthabitcompanion.domain.model.AddHabitRecordParam
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.usecase.AddHabitUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.AddRecordUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.DeleteHabitUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.GetHabitsUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.HabitCompleteUseCase
 import com.alamin.smarthabitcompanion.ui.theme.GreenApple
@@ -30,7 +31,8 @@ class HabitsScreenViewModel @Inject constructor(
     private val getHabitsUseCase: GetHabitsUseCase,
     private val addHabitUseCase: AddHabitUseCase,
     private val addRecordUseCase: AddRecordUseCase,
-    private val habitCompleteUseCase: HabitCompleteUseCase
+    private val habitCompleteUseCase: HabitCompleteUseCase,
+    private val deleteHabitUseCase: DeleteHabitUseCase
 ) :
     ViewModel() {
 
@@ -113,6 +115,12 @@ class HabitsScreenViewModel @Inject constructor(
     fun addHabitRecords(habitId: Int, value: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             addRecordUseCase.invoke(AddHabitRecordParam(habitId, value))
+        }
+    }
+
+    fun removeHabit(habit: Habit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteHabitUseCase.invoke(habit)
         }
     }
 

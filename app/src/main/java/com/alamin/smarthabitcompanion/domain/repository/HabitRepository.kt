@@ -16,5 +16,8 @@ interface HabitRepository {
     suspend fun addRecord(record: HabitRecord)
 
     suspend fun updateRecord(record: HabitRecord)
+
+    suspend fun deleteHabit(habit: Habit)
+
 }
 

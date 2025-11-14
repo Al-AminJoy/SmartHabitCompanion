@@ -11,17 +11,22 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Attractions
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Report
 import androidx.compose.material3.Checkbox
@@ -32,7 +37,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,154 +56,203 @@ import com.alamin.smarthabitcompanion.ui.presentation.model.HabitUiModel
 import com.alamin.smarthabitcompanion.ui.theme.GreenApple
 import com.alamin.smarthabitcompanion.ui.theme.Red
 
-@Preview
 @Composable
 fun HabitItem(
     modifier: Modifier = Modifier,
     habitUi: HabitUiModel,
     toHabitDetails: () -> Unit = {},
-    addHabitRecords: (Int, Int) -> Unit = { _, _ -> }
+    addHabitRecords: (Int, Int) -> Unit = { _, _ -> },
+    removeHabit: () -> Unit = { },
 ) {
-    ElevatedCard(
-        shape = MaterialTheme.shapes.medium,
-        modifier = modifier.clickable {
-            toHabitDetails()
-        },
-    ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Max)
-                .padding(AppConstants.APP_MARGIN.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    val swipToDismissBoxState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
+            if (it == SwipeToDismissBoxValue.StartToEnd) {
+                removeHabit()
+            } else if (it == SwipeToDismissBoxValue.EndToStart) {
+                removeHabit()
+            }
+
+            it != SwipeToDismissBoxValue.StartToEnd
+        }
+    )
+
+    SwipeToDismissBox(state = swipToDismissBoxState, modifier = modifier, backgroundContent = {
+        when (swipToDismissBoxState.dismissDirection) {
+            SwipeToDismissBoxValue.StartToEnd -> {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Remove item",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Red)
+                        .wrapContentSize(Alignment.CenterEnd)
+                        .padding(12.dp),
+                    tint = Color.White
+                )
+            }
+
+            SwipeToDismissBoxValue.EndToStart -> {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Remove item",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Red)
+                        .wrapContentSize(Alignment.CenterEnd)
+                        .padding(12.dp),
+                    tint = Color.White
+                )
+            }
+
+            SwipeToDismissBoxValue.Settled -> {
+
+            }
+        }
+    }) {
+        ElevatedCard(
+            shape = MaterialTheme.shapes.medium,
+            modifier = modifier.clickable {
+                toHabitDetails()
+            },
         ) {
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(habitUi.completionColor)
-                )
-                {
-                    Icon(
-                        Icons.Default.Attractions, contentDescription = null, Modifier
-                            .size(32.dp)
-                            .padding(
-                                AppConstants.APP_MARGIN.dp
-                            ), tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-
-
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "${habitUi.percentage}%",
-                        style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center)
-                    )
-                    CircularProgressIndicator(
-                        progress = { habitUi.percentage.toFloat() / 100 },
-                        modifier = Modifier.size(48.dp),
-                        color = habitUi.completionColor,
-                        strokeWidth = (AppConstants.APP_MARGIN / 2).dp,
-                        trackColor = habitUi.completionColor.copy(alpha = .30f),
-                        strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN).dp))
-
-            Column(
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max)
+                    .padding(AppConstants.APP_MARGIN.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    habitUi.name,
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
 
-                if (habitUi.target != null) {
-                    Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-                    Text(
-                        "${habitUi.progress}/${habitUi.target} ${habitUi.targetUnit}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-                Text("${habitUi.streak} Days Steak", style = MaterialTheme.typography.bodySmall)
-
-                Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxHeight()
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(habitUi.completionColor)
+                    )
+                    {
+                        Icon(
+                            Icons.Default.Attractions, contentDescription = null, Modifier
+                                .size(32.dp)
+                                .padding(
+                                    AppConstants.APP_MARGIN.dp
+                                ), tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
 
-                    Icon(
-                        habitUi.icon,
-                        contentDescription = null,
-                        Modifier.size(24.dp),
-                        tint = habitUi.completionColor
+
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "${habitUi.percentage}%",
+                            style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center)
+                        )
+                        CircularProgressIndicator(
+                            progress = { habitUi.percentage.toFloat() / 100 },
+                            modifier = Modifier.size(48.dp),
+                            color = habitUi.completionColor,
+                            strokeWidth = (AppConstants.APP_MARGIN / 2).dp,
+                            trackColor = habitUi.completionColor.copy(alpha = .30f),
+                            strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN).dp))
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                ) {
+                    Text(
+                        habitUi.name,
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-                    Text(
-                        habitUi.completionText,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            textAlign = TextAlign.End,
-                            color = habitUi.completionColor
-                        ),
-                        modifier = Modifier
-                    )
-                }
-            }
 
-            Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN).dp))
-
-            if (!habitUi.isCompleted) {
-                if (habitUi.target == null || habitUi.targetUnit == null) {
-                    Checkbox(
-                        checked = false,
-                        onCheckedChange = {
-                            addHabitRecords(habitUi.id, 1)
-                        },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = habitUi.completionColor,
-                            uncheckedColor = habitUi.completionColor
+                    if (habitUi.target != null) {
+                        Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
+                        Text(
+                            "${habitUi.progress}/${habitUi.target} ${habitUi.targetUnit}",
+                            style = MaterialTheme.typography.bodySmall
                         )
-                    )
-                } else {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.border(2.dp, habitUi.completionColor, CircleShape)
+                    }
+                    Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
+                    Text("${habitUi.streak} Days Steak", style = MaterialTheme.typography.bodySmall)
+
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(
-                            onClick = {
+
+                        Icon(
+                            habitUi.icon,
+                            contentDescription = null,
+                            Modifier.size(24.dp),
+                            tint = habitUi.completionColor
+                        )
+                        Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
+                        Text(
+                            habitUi.completionText,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                textAlign = TextAlign.End,
+                                color = habitUi.completionColor
+                            ),
+                            modifier = Modifier
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN).dp))
+
+                if (!habitUi.isCompleted) {
+                    if (habitUi.target == null || habitUi.targetUnit == null) {
+                        Checkbox(
+                            checked = false,
+                            onCheckedChange = {
                                 addHabitRecords(habitUi.id, 1)
                             },
-                            modifier = Modifier
-                                .size(32.dp)
-                                .padding(2.dp),
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = null,
-
-                                tint = habitUi.completionColor,
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = habitUi.completionColor,
+                                uncheckedColor = habitUi.completionColor
                             )
+                        )
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.border(2.dp, habitUi.completionColor, CircleShape)
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    addHabitRecords(habitUi.id, 1)
+                                },
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .padding(2.dp),
+                            ) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = null,
+
+                                    tint = habitUi.completionColor,
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
 
+        }
     }
+
+
 }

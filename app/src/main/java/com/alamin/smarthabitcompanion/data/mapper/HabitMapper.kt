@@ -9,6 +9,7 @@ import java.time.LocalDate
 
 fun Habit.toEntity(): HabitEntity {
     return HabitEntity(
+        id = this.id,
         name = this.name,
         target = this.target,
         targetUnit = this.targetUnit,

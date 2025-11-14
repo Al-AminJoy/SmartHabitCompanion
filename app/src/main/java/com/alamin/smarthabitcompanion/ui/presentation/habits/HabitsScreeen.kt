@@ -65,6 +65,8 @@ fun HabitsScreen(
                         },
                         addHabitRecords = { habitId, progress ->
                             viewModel.addHabitRecords(habitId, progress)
+                        }, removeHabit = {
+                            viewModel.removeHabit(habit)
                         })
                     Spacer(modifier = Modifier.padding(vertical = (AppConstants.APP_MARGIN / 2).dp))
                 }
