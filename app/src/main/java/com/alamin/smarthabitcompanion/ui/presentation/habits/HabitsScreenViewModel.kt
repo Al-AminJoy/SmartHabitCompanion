@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.domain.model.AddHabitParam
+import com.alamin.smarthabitcompanion.domain.model.AddHabitRecordParam
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.usecase.AddHabitUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.AddRecordUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.GetHabitsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +21,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: GetHabitsUseCase,private val addHabitUseCase: AddHabitUseCase) :
+class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: GetHabitsUseCase,
+                                                private val addHabitUseCase: AddHabitUseCase,
+                                                private val addRecordUseCase: AddRecordUseCase) :
     ViewModel() {
 
        private val mutableUiSate = MutableStateFlow(UiState())
@@ -57,7 +62,7 @@ class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: Ge
     }
 
     fun addHabit(onAddHabit: () -> Unit) {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             val state = uiState.value
             if (state.habitName.isEmpty()){
                 mutableUiSate.update { it.copy(message = Pair(false, "Please Enter a Habit Name")) }
@@ -72,6 +77,12 @@ class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: Ge
                 clearHabitInput()
                 onAddHabit()
             }
+        }
+    }
+
+    fun addHabitRecords(habitId: Int, value: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addRecordUseCase.invoke(AddHabitRecordParam(habitId, value))
         }
     }
 

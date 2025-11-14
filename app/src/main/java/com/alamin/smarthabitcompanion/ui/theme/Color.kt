@@ -419,7 +419,7 @@ val CookieBrown = Color(0xFFC7A317)
 
 val primary = Color(0xFFED3F27)
 val secondary = Color(0xFF393E46)
-val tertiary = Color(0xFF948979)
+val tertiary = Color(0xFF46C7C7)
 val light_Background = Color(0xFFE9E9E9)
 val light_surface = Color(0xFFE3E3E3)
 val dark_background = Color(0xFF262729)

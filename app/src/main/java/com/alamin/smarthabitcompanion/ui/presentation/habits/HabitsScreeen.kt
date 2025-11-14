@@ -49,11 +49,21 @@ fun HabitsScreen(
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
         if (uiState.habits.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.fillMaxWidth().padding(horizontal = AppConstants.APP_MARGIN.dp)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = AppConstants.APP_MARGIN.dp)
+            ) {
                 items(uiState.habits.size) { index ->
                     val habit = uiState.habits[index]
-                    HabitItem(habit, Modifier.fillMaxWidth(), toHabitDetails = toHabitDetails)
-                    Spacer(modifier = Modifier.padding(vertical = (AppConstants.APP_MARGIN/2).dp))
+                    HabitItem(
+                        habit,
+                        Modifier.fillMaxWidth(),
+                        toHabitDetails = toHabitDetails,
+                        addHabitRecords = { habitId, progress ->
+                            viewModel.addHabitRecords(habitId, progress)
+                        })
+                    Spacer(modifier = Modifier.padding(vertical = (AppConstants.APP_MARGIN / 2).dp))
                 }
             }
         }

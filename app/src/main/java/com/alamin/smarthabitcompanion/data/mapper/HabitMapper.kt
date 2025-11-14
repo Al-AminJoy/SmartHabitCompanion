@@ -13,7 +13,6 @@ fun Habit.toEntity(): HabitEntity {
         target = this.target,
         targetUnit = this.targetUnit,
         streakCount = this.streakCount,
-        isCompleted = this.isCompleted
     )
 }
 
@@ -40,7 +39,7 @@ fun HabitWithRecord.toDomain(): Habit{
         target = this.habit.target,
         targetUnit = this.habit.targetUnit,
         streakCount = this.habit.streakCount,
-        isCompleted = this.habit.isCompleted,
+        isCompleted = this.records.sumOf { it.progress } >= (this.habit.target?:0),
         habitRecords = this.records.map { it.toDomain() }
     )
 }

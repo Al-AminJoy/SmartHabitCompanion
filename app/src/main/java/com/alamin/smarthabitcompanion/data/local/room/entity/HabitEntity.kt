@@ -11,5 +11,4 @@ data class HabitEntity(
     val target: Int?,
     val targetUnit: String?,
     val streakCount: Int = 0,
-    val isCompleted: Boolean = false
 )

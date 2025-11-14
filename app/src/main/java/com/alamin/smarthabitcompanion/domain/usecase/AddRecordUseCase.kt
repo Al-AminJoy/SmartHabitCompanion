@@ -16,22 +16,13 @@ class AddRecordUseCase @Inject constructor(private val habitRepository: HabitRep
         val todayRecord = habitRepository.getRecordByHabitIdAndDate(
             addRecordParam.habitId,
             LocalDate.now().toString()
-        ).first()
+        )
 
-        if (todayRecord == null) {
-            val record = HabitRecord(
-                habitId = addRecordParam.habitId,
-                date = LocalDate.now(),
-                progress = 0,
-            )
-            habitRepository.addRecord(record)
-        } else {
-            val record = todayRecord.copy(
-                progress = todayRecord.progress + addRecordParam.progress,
-            )
-
-            habitRepository.updateRecord(record)
-
-        }
+        val record = HabitRecord(
+            habitId = addRecordParam.habitId,
+            date = LocalDate.now(),
+            progress = addRecordParam.progress,
+        )
+        habitRepository.addRecord(record)
     }
 }

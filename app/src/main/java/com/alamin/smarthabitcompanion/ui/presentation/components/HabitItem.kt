@@ -2,6 +2,7 @@ package com.alamin.smarthabitcompanion.ui.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +18,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Attractions
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Report
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -46,7 +50,8 @@ import com.alamin.smarthabitcompanion.ui.theme.Red
 fun HabitItem(
     habit: Habit = Habit(1, "Drink Water", 5, "Glass", 1, false),
     modifier: Modifier = Modifier,
-    toHabitDetails: (Habit) -> Unit = {}
+    toHabitDetails: (Habit) -> Unit = {},
+    addHabitRecords: (Int, Int) -> Unit = {_,_  ->}
 ) {
     ElevatedCard(
         shape = MaterialTheme.shapes.medium,
@@ -54,13 +59,23 @@ fun HabitItem(
             toHabitDetails(habit)
         },
     ) {
+        val habitProgress = habit.habitRecords.sumOf { it.progress }
 
+        val completionColor = if (habit.isCompleted) {
+            GreenApple
+        } else if (habitProgress > 0) {
+            MaterialTheme.colorScheme.tertiary
+        } else {
+            MaterialTheme.colorScheme.error
+        }
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Max)
-                .padding(AppConstants.APP_MARGIN.dp)
+                .padding(AppConstants.APP_MARGIN.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Column(
@@ -71,7 +86,7 @@ fun HabitItem(
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(completionColor)
                 )
                 {
                     Icon(
@@ -85,31 +100,36 @@ fun HabitItem(
                 Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
                 val progress = if (habit.isCompleted) {
                     100
-                } else if (habit.target == null){
+                } else if (habit.target == null) {
                     0
-                }else if (habit.target == 0){
+                } else if (habit.target == 0) {
                     0
-                }else{
+                } else {
                     val habitProgress = habit.habitRecords.sumOf { it.progress }
                     if (habitProgress > 0) {
-                       val progressPercent =  (habitProgress.toFloat() / habit.target.toFloat() * 100).toInt()
-                        if (progressPercent > 100){
+                        val progressPercent =
+                            (habitProgress.toFloat() / habit.target.toFloat() * 100).toInt()
+                        if (progressPercent > 100) {
                             100
-                        }else{
+                        } else {
                             progressPercent
                         }
                     } else {
                         0
                     }
                 }
+
                 Box(contentAlignment = Alignment.Center) {
-                    Text(text = "$progress%",style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center))
+                    Text(
+                        text = "$progress%",
+                        style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center)
+                    )
                     CircularProgressIndicator(
                         progress = { (".$progress").toFloat() },
                         modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary,
+                        color = completionColor,
                         strokeWidth = (AppConstants.APP_MARGIN / 2).dp,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = .30f),
+                        trackColor = completionColor.copy(alpha = .30f),
                         strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
                     )
                 }
@@ -119,7 +139,7 @@ fun HabitItem(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f)
                     .fillMaxHeight(),
             ) {
                 Text(
@@ -127,7 +147,7 @@ fun HabitItem(
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-                val habitProgress = habit.habitRecords.sumOf { it.progress }
+
                 if (habit.target != null) {
                     Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
                     Text(
@@ -139,7 +159,11 @@ fun HabitItem(
                 Text("${habit.streakCount} Days Steak", style = MaterialTheme.typography.bodySmall)
 
                 Spacer(modifier = Modifier.weight(1f))
-                Row (modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.End,verticalAlignment = Alignment.CenterVertically){
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     val completionText = if (habit.isCompleted) {
                         "Completed"
                     } else if (habitProgress > 0) {
@@ -148,13 +172,6 @@ fun HabitItem(
                         "Not Started"
                     }
 
-                    val completionColor = if (habit.isCompleted) {
-                        GreenApple
-                    } else if (habitProgress > 0) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.error
-                    }
 
                     val completionIcon = if (habit.isCompleted) {
                         Icons.Default.CheckCircle
@@ -163,17 +180,57 @@ fun HabitItem(
                     } else {
                         Icons.Default.Report
                     }
-                    Icon(completionIcon, contentDescription = null, Modifier.size(24.dp),tint = completionColor)
+                    Icon(
+                        completionIcon,
+                        contentDescription = null,
+                        Modifier.size(24.dp),
+                        tint = completionColor
+                    )
                     Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
                     Text(
                         completionText,
-                        style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.End,color = completionColor),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            textAlign = TextAlign.End,
+                            color = completionColor
+                        ),
                         modifier = Modifier
                     )
                 }
             }
-        }
 
+            Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN).dp))
+
+            if (!habit.isCompleted){
+                if (habit.target == null || habit.targetUnit == null) {
+                    Checkbox(
+                        checked = false,
+                        onCheckedChange = {
+                            addHabitRecords(habit.id, 1)
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = completionColor,
+                            uncheckedColor = completionColor
+                        )
+                    )
+                } else {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.border(2.dp, completionColor, CircleShape).clickable{
+                            addHabitRecords(habit.id, 1)
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = null,
+                            Modifier
+                                .size(32.dp)
+                                .padding(AppConstants.APP_MARGIN.dp),
+                            tint = completionColor,
+                        )
+                    }
+                }
+            }
+        }
 
     }
 }
