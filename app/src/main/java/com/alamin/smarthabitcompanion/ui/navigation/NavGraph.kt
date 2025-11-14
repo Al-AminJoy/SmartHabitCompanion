@@ -20,7 +20,7 @@ fun NavGraph(navController: NavHostController, mainViewModel: MainActivityViewMo
             }
         }
         composable<Destinations.Habits> {
-            HabitsScreen(sharedViewModel = mainViewModel, toAddHabit = {}, toHabitDetails = {})
+            HabitsScreen(sharedViewModel = mainViewModel, toDeleteHabit = {}, toHabitDetails = {})
         }
 
         composable<Destinations.Profile> {

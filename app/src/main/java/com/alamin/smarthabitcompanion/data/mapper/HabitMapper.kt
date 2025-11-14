@@ -39,7 +39,7 @@ fun HabitWithRecord.toDomain(): Habit{
         target = this.habit.target,
         targetUnit = this.habit.targetUnit,
         streakCount = this.habit.streakCount,
-        isCompleted = this.records.sumOf { it.progress } >= (this.habit.target?:0),
+        isCompleted = false,
         habitRecords = this.records.map { it.toDomain() }
     )
 }

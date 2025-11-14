@@ -1,5 +1,8 @@
 package com.alamin.smarthabitcompanion.ui.presentation.habits
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
@@ -9,6 +12,8 @@ import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.usecase.AddHabitUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.AddRecordUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.GetHabitsUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.HabitCompleteUseCase
+import com.alamin.smarthabitcompanion.ui.theme.GreenApple
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,14 +26,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: GetHabitsUseCase,
-                                                private val addHabitUseCase: AddHabitUseCase,
-                                                private val addRecordUseCase: AddRecordUseCase) :
+class HabitsScreenViewModel @Inject constructor(
+    private val getHabitsUseCase: GetHabitsUseCase,
+    private val addHabitUseCase: AddHabitUseCase,
+    private val addRecordUseCase: AddRecordUseCase,
+    private val habitCompleteUseCase: HabitCompleteUseCase
+) :
     ViewModel() {
 
-       private val mutableUiSate = MutableStateFlow(UiState())
+    private val mutableUiSate = MutableStateFlow(UiState())
 
-        val uiState = mutableUiSate.asStateFlow()
+    val uiState = mutableUiSate.asStateFlow()
 
     init {
 
@@ -39,7 +47,13 @@ class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: Ge
                 emptyList()
             ).collectLatest { habits ->
                 if (habits.isNotEmpty()) {
-                    mutableUiSate.update { it.copy(habits = habits) }
+                    mutableUiSate.update {
+                        it.copy(habits = habits.map {
+                            habitCompleteUseCase.invoke(
+                                it
+                            )
+                        })
+                    }
                 }
             }
         }
@@ -61,24 +75,40 @@ class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: Ge
         mutableUiSate.update { it.copy(targetUnit = value) }
     }
 
+
     fun addHabit(onAddHabit: () -> Unit) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             val state = uiState.value
-            if (state.habitName.isEmpty()){
+            if (state.habitName.isEmpty()) {
                 mutableUiSate.update { it.copy(message = Pair(false, "Please Enter a Habit Name")) }
-            }else if (state.habitName.length > AppConstants.ADD_HABIT_NAME_TEXT_LIMIT){
+            } else if (state.habitName.length > AppConstants.ADD_HABIT_NAME_TEXT_LIMIT) {
                 mutableUiSate.update { it.copy(message = Pair(false, "Habit Name is Too Long")) }
-            }else if (state.target.length > AppConstants.ADD_HABIT_TARGET_TEXT_LIMIT){
+            } else if (state.target.length > AppConstants.ADD_HABIT_TARGET_TEXT_LIMIT) {
                 mutableUiSate.update { it.copy(message = Pair(false, "Habit Target is Too Long")) }
-            }else if (state.targetUnit.length > AppConstants.ADD_HABIT_UNIT_TEXT_LIMIT){
-                mutableUiSate.update { it.copy(message = Pair(false, "Habit Target Unit Text is Too Long")) }
-            }else{
-                addHabitUseCase.invoke(AddHabitParam(state.habitName,state.target.toIntOrNull(),state.targetUnit))
+            } else if (state.targetUnit.length > AppConstants.ADD_HABIT_UNIT_TEXT_LIMIT) {
+                mutableUiSate.update {
+                    it.copy(
+                        message = Pair(
+                            false,
+                            "Habit Target Unit Text is Too Long"
+                        )
+                    )
+                }
+            } else {
+                addHabitUseCase.invoke(
+                    AddHabitParam(
+                        state.habitName,
+                        state.target.toIntOrNull(),
+                        state.targetUnit
+                    )
+                )
                 clearHabitInput()
                 onAddHabit()
             }
         }
     }
+
+
 
     fun addHabitRecords(habitId: Int, value: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -94,8 +124,8 @@ class HabitsScreenViewModel @Inject constructor(private val getHabitsUseCase: Ge
 }
 
 data class UiState(
-    val isLoading: Boolean= false,
-    val message: Pair<Boolean, String> ? = null,
+    val isLoading: Boolean = false,
+    val message: Pair<Boolean, String>? = null,
     val showAddHabitDialog: Boolean = false,
     val habitName: String = "",
     val target: String = "",
