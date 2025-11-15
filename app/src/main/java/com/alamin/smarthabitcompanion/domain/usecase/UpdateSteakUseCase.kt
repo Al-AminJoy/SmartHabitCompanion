@@ -15,7 +15,7 @@ class UpdateSteakUseCase @Inject constructor(private val getHabitsByIdUseCase: G
         habit?.let {
             val habit = habitCompleteUseCase.invoke(it)
 
-            it.streakCount = if (habit.isCompleted) habit.streakCount + 1 else 0
+            it.streakCount = if (habit.isCompleted) habit.streakCount + 1 else habit.streakCount + 0
 
             updateHabitUseCase(it)
         }
