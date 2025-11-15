@@ -1,6 +1,5 @@
 package com.alamin.smarthabitcompanion.ui.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,19 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Attractions
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckBox
-import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.HourglassTop
-import androidx.compose.material.icons.filled.Report
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,15 +37,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
-import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.ui.presentation.model.HabitUiModel
-import com.alamin.smarthabitcompanion.ui.theme.GreenApple
+import com.alamin.smarthabitcompanion.ui.theme.BeanRed
+import com.alamin.smarthabitcompanion.ui.theme.Green
 import com.alamin.smarthabitcompanion.ui.theme.Red
 
 @Composable
@@ -67,29 +60,19 @@ fun HabitItem(
 
     val swipToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.StartToEnd) {
+             if (it == SwipeToDismissBoxValue.EndToStart) {
                 removeHabit()
-            } else if (it == SwipeToDismissBoxValue.EndToStart) {
-                removeHabit()
-            }
-
-            it != SwipeToDismissBoxValue.StartToEnd
+                false
+            }else {
+                false
+             }
         }
     )
 
     SwipeToDismissBox(state = swipToDismissBoxState, modifier = modifier, backgroundContent = {
         when (swipToDismissBoxState.dismissDirection) {
             SwipeToDismissBoxValue.StartToEnd -> {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Remove item",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Red)
-                        .wrapContentSize(Alignment.CenterEnd)
-                        .padding(12.dp),
-                    tint = Color.White
-                )
+
             }
 
             SwipeToDismissBoxValue.EndToStart -> {
@@ -98,7 +81,9 @@ fun HabitItem(
                     contentDescription = "Remove item",
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Red)
+                        .drawBehind {
+                            drawRect(lerp(BeanRed, Red, swipToDismissBoxState.progress))
+                        }
                         .wrapContentSize(Alignment.CenterEnd)
                         .padding(12.dp),
                     tint = Color.White

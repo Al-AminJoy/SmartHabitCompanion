@@ -28,6 +28,7 @@ import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.ui.mapper.toHabitUi
 import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
 import com.alamin.smarthabitcompanion.ui.presentation.components.AddHabitDialog
+import com.alamin.smarthabitcompanion.ui.presentation.components.HabitDeleteConfirmDialog
 import com.alamin.smarthabitcompanion.ui.presentation.components.HabitItem
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
 
@@ -66,7 +67,7 @@ fun HabitsScreen(
                         addHabitRecords = { habitId, progress ->
                             viewModel.addHabitRecords(habitId, progress)
                         }, removeHabit = {
-                            viewModel.removeHabit(habit)
+                            viewModel.showConfirmDeleteDialog(habit)
                         })
                     Spacer(modifier = Modifier.padding(vertical = (AppConstants.APP_MARGIN / 2).dp))
                 }
@@ -104,6 +105,15 @@ fun HabitsScreen(
                 onDismiss = {
                     sharedViewModel.updateAddHabitDialog(false)
                 })
+        }
+
+        if (uiState.showConfirmDeletedDialog != null) {
+            HabitDeleteConfirmDialog(modifier = Modifier.fillMaxWidth(), onConfirm = {
+                viewModel.removeHabit(uiState.showConfirmDeletedDialog!!)
+                viewModel.showConfirmDeleteDialog(null)
+            }, onDismiss = {
+                viewModel.showConfirmDeleteDialog(null)
+            })
         }
 
     }

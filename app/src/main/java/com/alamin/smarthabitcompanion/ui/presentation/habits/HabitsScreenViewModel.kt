@@ -124,6 +124,11 @@ class HabitsScreenViewModel @Inject constructor(
         }
     }
 
+    fun showConfirmDeleteDialog(habit: Habit?) {
+        mutableUiSate.update { it.copy(showConfirmDeletedDialog = habit) }
+    }
+
+
     fun messageShown() {
         mutableUiSate.update { it.copy(message = null) }
     }
@@ -138,5 +143,6 @@ data class UiState(
     val habitName: String = "",
     val target: String = "",
     val targetUnit: String = "",
+    val showConfirmDeletedDialog: Habit? = null,
     val habits: List<Habit> = emptyList()
 )
