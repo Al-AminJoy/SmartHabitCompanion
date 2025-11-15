@@ -24,6 +24,10 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao, pr
         return habitDao.getHabitById(id).map { it?.toDomain() }
     }
 
+    override suspend fun updateHabit(habit: Habit) {
+        habitDao.updateHabit(habit.toEntity())
+    }
+
     override suspend fun getHabitRecordsByDate(date: String): Flow<List<HabitRecord>> {
         return habitRecordDao.getRecordsByDate(date).map { it.map { it.toDomain() } }
     }
@@ -31,8 +35,9 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao, pr
     override suspend fun getRecordByHabitIdAndDate(
         habitId: Int,
         date: String
-    ): Flow<HabitRecord?> {
-        return habitRecordDao.getRecordByHabitIdAndDate(habitId, date).map { it?.toDomain()
+    ): Flow<List<HabitRecord>> {
+        return habitRecordDao.getRecordByHabitIdAndDate(habitId, date).map {
+            it.map { it.toDomain() }
     }}
 
     override suspend fun addRecord(record: HabitRecord) {

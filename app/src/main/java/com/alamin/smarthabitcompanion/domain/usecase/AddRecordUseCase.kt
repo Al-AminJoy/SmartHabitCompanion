@@ -7,16 +7,9 @@ import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import javax.inject.Inject
 
-class AddRecordUseCase @Inject constructor(private val habitRepository: HabitRepository) {
+class AddRecordUseCase @Inject constructor(private val habitRepository: HabitRepository,
+                                           private val updateSteakUseCase: UpdateSteakUseCase) {
     suspend operator fun invoke(addRecordParam: AddHabitRecordParam) {
-        val habit = habitRepository.getHabitById(
-            addRecordParam.habitId,
-        ).first()
-
-        val todayRecord = habitRepository.getRecordByHabitIdAndDate(
-            addRecordParam.habitId,
-            LocalDate.now().toString()
-        )
 
         val record = HabitRecord(
             habitId = addRecordParam.habitId,
@@ -24,5 +17,6 @@ class AddRecordUseCase @Inject constructor(private val habitRepository: HabitRep
             progress = addRecordParam.progress,
         )
         habitRepository.addRecord(record)
+        updateSteakUseCase.invoke(addRecordParam.habitId)
     }
 }
