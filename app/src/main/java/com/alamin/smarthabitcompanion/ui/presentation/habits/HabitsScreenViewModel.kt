@@ -1,8 +1,6 @@
 package com.alamin.smarthabitcompanion.ui.presentation.habits
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
@@ -12,9 +10,8 @@ import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.usecase.AddHabitUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.AddRecordUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.DeleteHabitUseCase
-import com.alamin.smarthabitcompanion.domain.usecase.GetHabitsUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.HabitCompleteUseCase
-import com.alamin.smarthabitcompanion.ui.theme.GreenApple
+import com.alamin.smarthabitcompanion.domain.usecase.TodayHabitRecordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HabitsScreenViewModel @Inject constructor(
-    private val getHabitsUseCase: GetHabitsUseCase,
+    private val getTodayHabitRecordUseCase: TodayHabitRecordUseCase,
     private val addHabitUseCase: AddHabitUseCase,
     private val addRecordUseCase: AddRecordUseCase,
     private val habitCompleteUseCase: HabitCompleteUseCase,
@@ -43,7 +40,7 @@ class HabitsScreenViewModel @Inject constructor(
     init {
 
         viewModelScope.launch {
-            getHabitsUseCase().stateIn(
+            getTodayHabitRecordUseCase().stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
                 emptyList()

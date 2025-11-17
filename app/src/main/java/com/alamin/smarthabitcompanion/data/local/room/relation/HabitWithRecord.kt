@@ -11,5 +11,5 @@ data class HabitWithRecord(
         parentColumn = "id",
         entityColumn = "habitId"
     )
-    val records: List<HabitRecordEntity>
+    var records: List<HabitRecordEntity>
 )

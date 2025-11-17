@@ -5,7 +5,7 @@ data class Habit(
     val name: String,
     val target: Int?,
     val targetUnit: String?,
-    var streakCount: Int = 0,
+    val streakCount: Int = 0,
     val isCompleted: Boolean = false,
     val habitRecords: List<HabitRecord> = arrayListOf()
 )

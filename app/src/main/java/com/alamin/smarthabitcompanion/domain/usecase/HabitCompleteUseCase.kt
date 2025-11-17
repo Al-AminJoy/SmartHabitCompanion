@@ -6,6 +6,6 @@ import javax.inject.Inject
 class HabitCompleteUseCase @Inject constructor() {
     operator fun invoke(habit: Habit): Habit{
         val totalProgress = habit.habitRecords.sumOf { it.progress }
-        return habit.copy(isCompleted = totalProgress > (habit.target?:0))
+        return habit.copy(isCompleted = totalProgress >= (habit.target?:0))
     }
 }
