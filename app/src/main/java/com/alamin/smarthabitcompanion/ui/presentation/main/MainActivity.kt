@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.FormatListBulleted
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -67,15 +68,32 @@ class MainActivity : ComponentActivity() {
                         title = {
                             Text(uiState.title)
                         }, actions = {
-                            IconButton(onClick = {}) {
-                                Icon(Icons.Default.Menu, contentDescription = null)
+                            if (uiState.title.equals(NavigationDestinations.HOME.value,true)){
+                                IconButton(onClick = {}) {
+                                    Icon(Icons.Default.Menu, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                }
+                            }
+                        }, navigationIcon = {
+                            if (!uiState.title.equals(NavigationDestinations.HOME.value, true)) {
+                                IconButton(onClick = {
+                                    navController.navigateUp()
+                                }) {
+                                    Icon(Icons.Outlined.ArrowBackIosNew, contentDescription = null,tint = MaterialTheme.colorScheme.onPrimary)
+                                }
                             }
                         },
-                      //  colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary, titleContentColor = MaterialTheme.colorScheme.onPrimary)
                     )
 
                 }, bottomBar = {
-                    if (uiState.title.equals(NavigationDestinations.HOME.value,true) || uiState.title.equals(NavigationDestinations.HABITS.value,true)|| uiState.title.equals(NavigationDestinations.PROFILE.value,true) ){
+                    if (uiState.title.equals(
+                            NavigationDestinations.HOME.value,
+                            true
+                        ) || uiState.title.equals(
+                            NavigationDestinations.HABITS.value,
+                            true
+                        ) || uiState.title.equals(NavigationDestinations.PROFILE.value, true)
+                    ) {
                         NavigationBar(
                             windowInsets = NavigationBarDefaults.windowInsets,
                         ) {
@@ -87,13 +105,15 @@ class MainActivity : ComponentActivity() {
                                     selected = selected,
                                     onClick = {
                                         selectedNavigationDestination = index
-                                        when(selectedNavigationDestination){
+                                        when (selectedNavigationDestination) {
                                             0 -> {
                                                 navController.navigate(Destinations.Home)
                                             }
+
                                             1 -> {
                                                 navController.navigate(Destinations.Habits)
                                             }
+
                                             2 -> {
                                                 navController.navigate(Destinations.Profile)
                                             }
@@ -118,7 +138,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }, floatingActionButton = {
-                    if (uiState.title.equals(NavigationDestinations.HABITS.value,true)){
+                    if (uiState.title.equals(NavigationDestinations.HABITS.value, true)) {
                         FloatingActionButton(onClick = {
                             viewModel.updateAddHabitDialog(true)
                         }) {

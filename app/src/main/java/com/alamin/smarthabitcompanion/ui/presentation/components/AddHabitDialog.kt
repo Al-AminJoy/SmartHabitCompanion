@@ -52,7 +52,7 @@ fun AddHabitDialog(
 ) {
     Dialog(
         onDismissRequest = { onDismiss() },
-        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
     ) {
 
         val focusManager = LocalFocusManager.current
@@ -78,7 +78,7 @@ fun AddHabitDialog(
                 Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
                 Text(
                     "Add New Habit",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 )
             }
 
@@ -160,7 +160,7 @@ fun HabitInput(
     isNumber: Boolean = false,
     onValueChange: (String) -> Unit
 ) {
-    Text(title, style = MaterialTheme.typography.labelMedium)
+    Text(title, style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurface))
     Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
     BasicTextField(
         value = value, onValueChange = {

@@ -1,7 +1,9 @@
 package com.alamin.smarthabitcompanion.ui.presentation.habits
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,12 +15,14 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,7 +40,6 @@ import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
 fun HabitsScreen(
     sharedViewModel: MainActivityViewModel,
     viewModel: HabitsScreenViewModel = hiltViewModel(),
-    toDeleteHabit: () -> Unit,
     toHabitDetails: (Habit) -> Unit
 ) {
 
@@ -48,7 +51,16 @@ fun HabitsScreen(
         sharedViewModel.updateTitle(NavigationDestinations.HABITS.value)
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = (AppConstants.APP_MARGIN * 5).dp)
+                .clip(RoundedCornerShape(topStart = AppConstants.APP_MARGIN.dp, topEnd = AppConstants.APP_MARGIN.dp))
+                .background(MaterialTheme.colorScheme.background)
+
+        )
 
         if (uiState.habits.isNotEmpty()) {
             LazyColumn(

@@ -47,7 +47,7 @@ fun Habit.toHabitUi(): HabitUiModel {
     val completionColor = if (this.isCompleted) {
         GreenApple
     } else if (habitProgress > 0) {
-        MaterialTheme.colorScheme.tertiary
+        MaterialTheme.colorScheme.secondary
     } else {
         MaterialTheme.colorScheme.error
     }

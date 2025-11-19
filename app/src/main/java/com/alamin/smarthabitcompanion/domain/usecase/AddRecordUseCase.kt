@@ -13,7 +13,7 @@ class AddRecordUseCase @Inject constructor(private val habitRepository: HabitRep
 
         val record = HabitRecord(
             habitId = addRecordParam.habitId,
-            date = LocalDate.now(),
+            date = LocalDate.now().toString(),
             progress = addRecordParam.progress,
         )
         habitRepository.addRecord(record)

@@ -10,4 +10,8 @@ sealed class Destinations {
     @Serializable
     data object Profile: Destinations()
 
+    @Serializable
+    data class HabitDetails(val habit: String): Destinations()
+
+
 }

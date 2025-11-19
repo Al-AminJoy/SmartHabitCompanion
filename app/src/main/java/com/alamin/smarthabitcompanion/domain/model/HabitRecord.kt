@@ -1,10 +1,11 @@
 package com.alamin.smarthabitcompanion.domain.model
 
-import java.time.LocalDate
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class HabitRecord(
     val id: Int = 0,
     val habitId: Int,
-    val date: LocalDate,
+    val date: String,
     val progress: Int,
 )

@@ -1,5 +1,8 @@
 package com.alamin.smarthabitcompanion.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Habit(
     val id: Int = 0,
     val name: String,

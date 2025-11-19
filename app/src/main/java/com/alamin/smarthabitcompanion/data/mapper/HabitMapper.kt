@@ -20,7 +20,7 @@ fun Habit.toEntity(): HabitEntity {
 fun HabitRecord.toEntity(): HabitRecordEntity{
     return HabitRecordEntity(
         habitId = this.habitId,
-        date = this.date.toString(),
+        date = this.date,
         progress = this.progress,
     )
 }
@@ -28,7 +28,7 @@ fun HabitRecordEntity.toDomain(): HabitRecord {
     return HabitRecord(
         id = this.id,
         habitId = this.habitId,
-        date = LocalDate.parse(this.date),
+        date = this.date,
         progress = this.progress,
     )
 }
