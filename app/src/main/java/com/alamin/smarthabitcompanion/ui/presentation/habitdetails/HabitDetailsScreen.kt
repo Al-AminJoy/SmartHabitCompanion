@@ -25,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +34,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
@@ -46,6 +48,7 @@ fun HabitDetailsScreen(
 
     val config = LocalConfiguration.current
     val height = config.screenHeightDp
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         sharedViewModel.updateTitle(habit.name)
@@ -130,7 +133,7 @@ fun HabitDetailsScreen(
 
         }
 
-        /**/
+
     }
 
 }

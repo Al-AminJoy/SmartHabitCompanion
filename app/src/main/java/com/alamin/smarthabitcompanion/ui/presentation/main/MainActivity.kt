@@ -66,7 +66,9 @@ class MainActivity : ComponentActivity() {
                 Scaffold(topBar = {
                     TopAppBar(
                         title = {
-                            Text(uiState.title)
+                            if (!uiState.title.equals(NavigationDestinations.HOME.value,true)){
+                                Text(uiState.title)
+                            }
                         }, actions = {
                             if (uiState.title.equals(NavigationDestinations.HOME.value,true)){
                                 IconButton(onClick = {}) {

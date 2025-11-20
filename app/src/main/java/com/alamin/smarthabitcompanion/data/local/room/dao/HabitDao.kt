@@ -17,6 +17,9 @@ interface HabitDao {
     @Query("SELECT * FROM HabitEntity")
     fun getAllHabits(): Flow<List<HabitWithRecord>>
 
+    @Query("SELECT * FROM HabitEntity")
+    fun getAllHabitList(): Flow<List<HabitEntity>>
+
     @Transaction
     @Query("SELECT * FROM HabitEntity WHERE id = :habitId")
     fun getHabitById(habitId: Int): Flow<HabitWithRecord?>

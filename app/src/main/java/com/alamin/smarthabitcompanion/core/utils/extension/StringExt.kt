@@ -1,6 +1,7 @@
 package com.alamin.smarthabitcompanion.core.utils.extension
 
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -40,10 +41,10 @@ fun String.checkIsBefore(deadline: String): Boolean {
 
     val currentDate = this
 
-    var initialBeforeDate = deadline.split("-")
-    var beforeDay = initialBeforeDate[0]
+    val initialBeforeDate = deadline.split("-")
+    var beforeDay = initialBeforeDate[2]
     var beforeMonth = initialBeforeDate[1]
-    var beforeYear = initialBeforeDate[2]
+    val beforeYear = initialBeforeDate[0]
 
     if (beforeDay.length == 1){
         beforeDay = "0${beforeDay}"
@@ -53,14 +54,14 @@ fun String.checkIsBefore(deadline: String): Boolean {
         beforeMonth = "0${beforeMonth}"
     }
 
-    val furnishedBeforeDate = "${beforeDay}-${beforeMonth}-${beforeYear}"
+    val furnishedBeforeDate = "${beforeYear}-${beforeMonth}-${beforeDay}"
 
-    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH)
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    val beforeDate = LocalDateTime.parse(furnishedBeforeDate, formatter)
+    val beforeDate = LocalDate.parse(furnishedBeforeDate, formatter)
     val oneDayAfter = beforeDate.plusDays(1)
 
-    val targetDate = LocalDateTime.parse(currentDate, formatter)
+    val targetDate = LocalDate.parse(currentDate, formatter)
 
     return targetDate.isBefore(oneDayAfter)
 }

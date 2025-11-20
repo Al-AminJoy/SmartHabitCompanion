@@ -8,6 +8,7 @@ interface HabitRepository {
     suspend fun getAllHabit(): Flow<List<Habit>>
 
     suspend fun getTodayHabitRecord():Flow<List<Habit>>
+    suspend fun getSevenDayHabitRecord():Flow<List<Habit>>
 
 
     suspend fun addHabit(habit: Habit)

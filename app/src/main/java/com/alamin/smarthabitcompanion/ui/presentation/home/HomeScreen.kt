@@ -1,16 +1,21 @@
 package com.alamin.smarthabitcompanion.ui.presentation.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -27,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
@@ -70,16 +76,25 @@ fun HomeScreen(
 
     Surface(modifier = Modifier.fillMaxSize()) {
 
-        Column(modifier = Modifier.fillMaxSize()) {
-
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)) {
             if (uiState.weather != null) {
                 WeatherInfo(
                     weather = uiState.weather!!, modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            AppConstants.APP_MARGIN.dp
-                        )
+
                 )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(topStart = (AppConstants.APP_MARGIN * 2).dp, topEnd = (AppConstants.APP_MARGIN * 2).dp)).background(
+                        MaterialTheme.colorScheme.onPrimary)
+            ) {
+
+
             }
 
 
@@ -103,74 +118,72 @@ val dummyWeather = Weather(
 @Composable
 fun WeatherInfo(weather: Weather = dummyWeather, modifier: Modifier = Modifier) {
 
-    Card(
-        shape = MaterialTheme.shapes.medium,
-        modifier = modifier,
-        colors = CardDefaults.elevatedCardColors(
-
-        )
+    Row(
+        modifier = modifier
+            .padding(AppConstants.APP_MARGIN.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Column() {
+            Text(
+                text = "${weather.temperature} \u00B0C",
+                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
+            )
+            Text(
+                text = "${weather.city}, ${weather.country}",
+                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
 
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                           MaterialTheme.colorScheme.primary.copy(
-                                alpha = .5f
-                            ),MaterialTheme.colorScheme.primary.copy(
-                                alpha = .4f
-                            ),MaterialTheme.colorScheme.primary.copy(
-                                alpha = .3f
-                            ),MaterialTheme.colorScheme.primary.copy(
-                                alpha = .2f
-                            )
-                        )
-                    )
-                )
-                .padding((AppConstants.APP_MARGIN * 2).dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-
-            Column() {
-                Text(
-                    text = "${weather.temperature} \u00B0C",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    text = "${weather.city}, ${weather.country}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-
-            Column (horizontalAlignment = Alignment.CenterHorizontally){
-                Box(modifier = Modifier.size(80.dp), contentAlignment = Alignment.Center) {
-                    if (weather.icon != null) {
-                        AsyncImage(
-                            model = buildImageRequest(if (weather.icon.contains("//")) "https:${weather.icon}" else weather.icon),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "Weather Image",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else {
-                        Icon(
-                            Icons.Default.BrokenImage,
-                            contentDescription = "Image Not Found",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-                Text(text = weather.condition ?: "", style = MaterialTheme.typography.bodySmall)
-
-            }
-
+            )
+            Text(
+                text = "${weather.condition}",
+                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
+            )
         }
 
-    }
+        Box(modifier = Modifier.size(80.dp), contentAlignment = Alignment.Center) {
+            if (weather.icon != null) {
+                AsyncImage(
+                    model = buildImageRequest(if (weather.icon.contains("//")) "https:${weather.icon}" else weather.icon),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "Weather Image",
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Icon(
+                    Icons.Default.BrokenImage,
+                    contentDescription = "Image Not Found",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
 
+        Column {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .border(
+                        2.dp, MaterialTheme.colorScheme.onPrimary,
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = "Image Not Found",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(AppConstants.APP_MARGIN.dp)
+                )
+            }
+            Spacer(modifier = Modifier.size(AppConstants.APP_MARGIN.dp))
+            Text(
+                text = "Al-Amin Joy",
+                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
+            )
+        }
+
+
+    }
 
 }
