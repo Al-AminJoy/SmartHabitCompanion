@@ -1,5 +1,8 @@
 package com.alamin.smarthabitcompanion.ui.presentation.home
 
+import android.R.attr.resource
+import android.graphics.drawable.Icon
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -9,17 +12,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.LockClock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
@@ -36,12 +44,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.alamin.smarthabitcompanion.R
 import com.alamin.smarthabitcompanion.core.network.ServerConstants
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.domain.model.Weather
@@ -49,13 +64,19 @@ import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
 import com.alamin.smarthabitcompanion.ui.presentation.components.buildImageRequest
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
 import com.alamin.smarthabitcompanion.ui.theme.BasketBallOrange
+import com.alamin.smarthabitcompanion.ui.theme.ForestGreen
+import com.alamin.smarthabitcompanion.ui.theme.Gold
 import com.alamin.smarthabitcompanion.ui.theme.Grapefruit
 import com.alamin.smarthabitcompanion.ui.theme.Green
+import com.alamin.smarthabitcompanion.ui.theme.GreenApple
+import com.alamin.smarthabitcompanion.ui.theme.LavaRed
 import com.alamin.smarthabitcompanion.ui.theme.LightCoral
 import com.alamin.smarthabitcompanion.ui.theme.LightSalmon
 import com.alamin.smarthabitcompanion.ui.theme.Orange
 import com.alamin.smarthabitcompanion.ui.theme.Orchid
 import com.alamin.smarthabitcompanion.ui.theme.PumpkinOrange
+import com.alamin.smarthabitcompanion.ui.theme.SaddleBrown
+import com.alamin.smarthabitcompanion.ui.theme.SandyBrown
 import com.alamin.smarthabitcompanion.ui.theme.SunYellow
 import com.alamin.smarthabitcompanion.ui.theme.White
 import com.alamin.smarthabitcompanion.ui.theme.Yellow
@@ -76,9 +97,11 @@ fun HomeScreen(
 
     Surface(modifier = Modifier.fillMaxSize()) {
 
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary)
+        ) {
             if (uiState.weather != null) {
                 WeatherInfo(
                     weather = uiState.weather!!, modifier = Modifier
@@ -90,10 +113,145 @@ fun HomeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(topStart = (AppConstants.APP_MARGIN * 2).dp, topEnd = (AppConstants.APP_MARGIN * 2).dp)).background(
-                        MaterialTheme.colorScheme.onPrimary)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = (AppConstants.APP_MARGIN * 2).dp,
+                            topEnd = (AppConstants.APP_MARGIN * 2).dp
+                        )
+                    )
+                    .background(
+                        MaterialTheme.colorScheme.onPrimary
+                    )
             ) {
 
+                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
+                Text(
+                    "65%",
+                    style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    "Completed Today",
+                    style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
+                LinearProgressIndicator(
+                    progress = { .65f },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((AppConstants.APP_MARGIN).dp)
+                        .padding(
+                            horizontal =
+                                (AppConstants.APP_MARGIN * 4).dp
+                        ),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = .30f),
+                    strokeCap = StrokeCap.Round,
+                    gapSize = 2.dp
+                )
+                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
+                Text(
+                    "Today's Summary",
+                    style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Start),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+                )
+                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+                ) {
+
+                    SummaryCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = (AppConstants.APP_MARGIN / 2).dp),
+                        icon = Icons.Default.CheckCircle,
+                        color = MaterialTheme.colorScheme.secondary,
+                        title = "Total",
+                        10
+                    )
+                    SummaryCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(
+                                start = (AppConstants.APP_MARGIN / 2).dp,
+                                end = (AppConstants.APP_MARGIN / 2).dp
+                            ),
+                        icon = Icons.Default.LockClock,
+                        color = GreenApple,
+                        title = "Completed",
+                        10
+                    )
+                    SummaryCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = (AppConstants.APP_MARGIN / 2).dp),
+                        icon = Icons.Default.LockClock,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        title = "Pending",
+                        10
+                    )
+
+
+                }
+
+                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
+                Text(
+                    "Streak Highlights",
+                    style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Start),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+                )
+                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+                ) {
+
+                    StreakHighlightCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = (AppConstants.APP_MARGIN / 2).dp),
+                        icon = painterResource(R.drawable.ic_trophy),
+                        color = SandyBrown,
+                        title = "Highest",
+                        value = "10",
+                        unit = "Days"
+                    )
+                    StreakHighlightCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(
+                                start = (AppConstants.APP_MARGIN / 2).dp,
+                                end = (AppConstants.APP_MARGIN / 2).dp
+                            ),
+                        icon = painterResource(R.drawable.ic_lowest),
+                        color = LavaRed,
+                        title = "Lowest",
+                        "10",
+                        unit = "Days"
+                    )
+                    StreakHighlightCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = (AppConstants.APP_MARGIN / 2).dp),
+                        icon = painterResource(R.drawable.ic_award),
+                        color = SandyBrown,
+                        title = "Best",
+                        "Drinking Water",
+                        unit = ""
+                    )
+
+
+                }
 
             }
 
@@ -102,6 +260,89 @@ fun HomeScreen(
 
     }
 
+}
+
+@Composable
+fun SummaryCard(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    color: Color,
+    title: String,
+    value: Int
+) {
+    ElevatedCard(
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppConstants.APP_MARGIN.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(imageVector = icon, contentDescription = null, tint = color)
+            Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "$title | ",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+                )
+                Text(
+                    "$value",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = color
+                    )
+                )
+
+            }
+        }
+    }
+}
+
+@Composable
+fun StreakHighlightCard(
+    modifier: Modifier = Modifier,
+    icon: Painter,
+    color: Color,
+    title: String,
+    value: String,
+    unit: String
+) {
+    ElevatedCard(
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppConstants.APP_MARGIN.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(painter = icon, contentDescription = null, tint = color, modifier = Modifier.size(32.dp))
+            Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
+            Text(
+                title,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    value,
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold,
+                        color = color)
+                )
+                Text(
+                    " $unit",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                )
+
+            }
+        }
+    }
 }
 
 val dummyWeather = Weather(
@@ -120,47 +361,44 @@ fun WeatherInfo(weather: Weather = dummyWeather, modifier: Modifier = Modifier) 
 
     Row(
         modifier = modifier
-            .padding(AppConstants.APP_MARGIN.dp),
+            .padding(
+                start = (AppConstants.APP_MARGIN).dp, end = (AppConstants.APP_MARGIN * 2).dp,
+                bottom = AppConstants.APP_MARGIN.dp
+            ),
         horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Bottom
     ) {
-        Column() {
-            Text(
-                text = "${weather.temperature} \u00B0C",
-                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
-            )
-            Text(
-                text = "${weather.city}, ${weather.country}",
-                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
 
-            )
-            Text(
-                text = "${weather.condition}",
-                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
-            )
-        }
-
-        Box(modifier = Modifier.size(80.dp), contentAlignment = Alignment.Center) {
-            if (weather.icon != null) {
-                AsyncImage(
-                    model = buildImageRequest(if (weather.icon.contains("//")) "https:${weather.icon}" else weather.icon),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "Weather Image",
-                    modifier = Modifier.fillMaxSize()
+        Row {
+            Column(modifier = Modifier.padding(top = (AppConstants.APP_MARGIN * 4).dp)) {
+                Text(
+                    text = "${weather.temperature} \u00B0C",
+                    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
                 )
-            } else {
-                Icon(
-                    Icons.Default.BrokenImage,
-                    contentDescription = "Image Not Found",
+                Text(
+                    text = "${weather.city}, ${weather.country}",
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
+
+                )
+                Text(
+                    text = "${weather.condition}",
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
+                )
+            }
+
+            Box(modifier = Modifier.size(52.dp), contentAlignment = Alignment.Center) {
+                Image(
+                    painterResource(R.drawable.weather),
+                    contentDescription = null,
                     modifier = Modifier.fillMaxSize()
                 )
             }
         }
 
-        Column {
+        Column(modifier = Modifier.padding(), horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(36.dp)
                     .border(
                         2.dp, MaterialTheme.colorScheme.onPrimary,
                         CircleShape
