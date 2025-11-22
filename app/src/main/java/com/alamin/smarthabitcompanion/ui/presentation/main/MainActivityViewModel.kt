@@ -54,5 +54,5 @@ class MainActivityViewModel @Inject constructor(
 data class UISate(
     val isLoading: Boolean = false,
     val title: String = "",
-    val showAddHabitDialog: Boolean = false
+    val showAddHabitDialog: Boolean = false,
 )

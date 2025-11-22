@@ -2,6 +2,11 @@ package com.alamin.smarthabitcompanion.ui.presentation.home
 
 import android.R.attr.resource
 import android.graphics.drawable.Icon
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,6 +53,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -81,6 +87,7 @@ import com.alamin.smarthabitcompanion.ui.theme.SunYellow
 import com.alamin.smarthabitcompanion.ui.theme.White
 import com.alamin.smarthabitcompanion.ui.theme.Yellow
 import com.alamin.smarthabitcompanion.ui.theme.YellowGreen
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
@@ -91,8 +98,16 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 
+
     LaunchedEffect(Unit) {
         sharedViewModel.updateTitle(NavigationDestinations.HOME.value)
+    }
+
+    LaunchedEffect(uiState.animateWeatherIcon) {
+        if (!uiState.animateWeatherIcon) {
+            delay(500)
+            viewModel.updateUIState(uiState.copy(animateWeatherIcon = true))
+        }
     }
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -104,7 +119,7 @@ fun HomeScreen(
         ) {
             if (uiState.weather != null) {
                 WeatherInfo(
-                    weather = uiState.weather!!, modifier = Modifier
+                    weather = uiState.weather!!, uiState.animateWeatherIcon, modifier = Modifier
                         .fillMaxWidth()
 
                 )
@@ -199,7 +214,6 @@ fun HomeScreen(
 
 
                 }
-
                 Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
                 Text(
                     "Streak Highlights",
@@ -252,6 +266,15 @@ fun HomeScreen(
 
 
                 }
+                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
+                Text(
+                    "Last 7 Days Completion Chart",
+                    style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Start),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+                )
+                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
 
             }
 
@@ -321,7 +344,12 @@ fun StreakHighlightCard(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(painter = icon, contentDescription = null, tint = color, modifier = Modifier.size(32.dp))
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(32.dp)
+            )
             Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
             Text(
                 title,
@@ -330,8 +358,10 @@ fun StreakHighlightCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     value,
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold,
-                        color = color)
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = color
+                    )
                 )
                 Text(
                     " $unit",
@@ -357,7 +387,11 @@ val dummyWeather = Weather(
 
 @Preview
 @Composable
-fun WeatherInfo(weather: Weather = dummyWeather, modifier: Modifier = Modifier) {
+fun WeatherInfo(
+    weather: Weather = dummyWeather,
+    weatherIconVisibility: Boolean = false,
+    modifier: Modifier = Modifier
+) {
 
     Row(
         modifier = modifier
@@ -369,29 +403,50 @@ fun WeatherInfo(weather: Weather = dummyWeather, modifier: Modifier = Modifier) 
         verticalAlignment = Alignment.Bottom
     ) {
 
-        Row {
-            Column(modifier = Modifier.padding(top = (AppConstants.APP_MARGIN * 4).dp)) {
-                Text(
-                    text = "${weather.temperature} \u00B0C",
-                    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
-                )
-                Text(
-                    text = "${weather.city}, ${weather.country}",
-                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
+        val density = LocalDensity.current
 
-                )
-                Text(
-                    text = "${weather.condition}",
-                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
-                )
+
+        Row {
+
+            AnimatedVisibility(visible = weatherIconVisibility, enter = slideInHorizontally {
+                with(density){
+                    -50.dp.roundToPx()
+                }
+            }) {
+                Column(modifier = Modifier.padding(top = (AppConstants.APP_MARGIN * 4).dp)) {
+                    Text(
+                        text = "${weather.temperature} \u00B0C",
+                        style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
+                    )
+                    Text(
+                        text = "${weather.city}, ${weather.country}",
+                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
+
+                    )
+                    Text(
+                        text = "${weather.condition}",
+                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
+                    )
+                }
             }
 
-            Box(modifier = Modifier.size(52.dp), contentAlignment = Alignment.Center) {
-                Image(
-                    painterResource(R.drawable.weather),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
-                )
+
+
+
+
+            AnimatedVisibility(visible = weatherIconVisibility, enter = slideInHorizontally{
+                with(density){
+                    50.dp.roundToPx()
+                }
+            }) {
+                Box(modifier = Modifier.size(52.dp), contentAlignment = Alignment.Center) {
+                    Image(
+                        painterResource(R.drawable.weather),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
             }
         }
 

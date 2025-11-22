@@ -6,9 +6,11 @@ import com.alamin.smarthabitcompanion.core.network.ServerConstants
 import com.alamin.smarthabitcompanion.core.utils.Result
 import com.alamin.smarthabitcompanion.core.utils.extension.getMessage
 import com.alamin.smarthabitcompanion.domain.model.CurrentWeatherRequestParam
+import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.model.Weather
 import com.alamin.smarthabitcompanion.domain.usecase.CurrentWeatherRequestUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.CurrentWeatherUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.GetHabitsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,17 +23,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val currentWeatherRequestUseCase: CurrentWeatherRequestUseCase,private val currentWeatherUseCase: CurrentWeatherUseCase) :
+class HomeViewModel @Inject constructor(private val currentWeatherRequestUseCase: CurrentWeatherRequestUseCase,
+                                        private val currentWeatherUseCase: CurrentWeatherUseCase,
+                                        private val getHabitsUseCase: GetHabitsUseCase) :
     ViewModel() {
         private val mutableUIState = MutableStateFlow(UIState())
         val uiState: StateFlow<UIState> = mutableUIState
 
 
-
-
     init {
         requestCurrentWeather()
         observeWeatherData()
+        observeHabits()
     }
 
     private fun observeWeatherData() {
@@ -43,6 +46,19 @@ class HomeViewModel @Inject constructor(private val currentWeatherRequestUseCase
                 }
             }
         }
+    }
+
+    private fun observeHabits(){
+        viewModelScope.launch (Dispatchers.IO){
+            getHabitsUseCase.invoke().stateIn(viewModelScope,
+                SharingStarted.WhileSubscribed(),emptyList()).collectLatest{ habits ->
+                    if (habits.isNotEmpty()){
+                        mutableUIState.update { it.copy(habits = habits) }
+                    }
+            }
+
+        }
+
     }
 
     fun updateUIState(uiState: UIState) {
@@ -74,5 +90,7 @@ data class UIState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val successMessage: String? = null,
-    val weather: Weather ? = null
+    val weather: Weather ? = null,
+    val habits: List<Habit> = arrayListOf(),
+    val animateWeatherIcon: Boolean = false
 )
