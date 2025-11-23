@@ -92,5 +92,6 @@ data class UIState(
     val successMessage: String? = null,
     val weather: Weather ? = null,
     val habits: List<Habit> = arrayListOf(),
-    val animateWeatherIcon: Boolean = false
+    val animateWeatherIcon: Boolean = false,
+    val isMale: Boolean = true
 )

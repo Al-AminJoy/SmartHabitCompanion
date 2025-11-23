@@ -2,19 +2,27 @@ package com.alamin.smarthabitcompanion.ui.presentation.home
 
 import android.R.attr.resource
 import android.graphics.drawable.Icon
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +48,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -89,6 +101,8 @@ import com.alamin.smarthabitcompanion.ui.theme.Yellow
 import com.alamin.smarthabitcompanion.ui.theme.YellowGreen
 import kotlinx.coroutines.delay
 
+private const val TAG = "HomeScreen"
+
 @Composable
 fun HomeScreen(
     sharedViewModel: MainActivityViewModel,
@@ -97,7 +111,18 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val progress by remember { mutableFloatStateOf(0f) }
 
+    val progressValue = produceState(progress) {
+
+        while (value <= 65f) {
+            delay(4)
+            value += .1f
+            Log.d(TAG, "HomeScreen: $value")
+
+        }
+
+    }
 
     LaunchedEffect(Unit) {
         sharedViewModel.updateTitle(NavigationDestinations.HOME.value)
@@ -105,7 +130,7 @@ fun HomeScreen(
 
     LaunchedEffect(uiState.animateWeatherIcon) {
         if (!uiState.animateWeatherIcon) {
-            delay(500)
+            delay(300)
             viewModel.updateUIState(uiState.copy(animateWeatherIcon = true))
         }
     }
@@ -119,7 +144,10 @@ fun HomeScreen(
         ) {
             if (uiState.weather != null) {
                 WeatherInfo(
-                    weather = uiState.weather!!, uiState.animateWeatherIcon, modifier = Modifier
+                    isMale = true,
+                    weather = uiState.weather!!,
+                    uiState.animateWeatherIcon,
+                    modifier = Modifier
                         .fillMaxWidth()
 
                 )
@@ -152,7 +180,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
                 LinearProgressIndicator(
-                    progress = { .65f },
+                    progress = { (progressValue.value / 100f) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height((AppConstants.APP_MARGIN).dp)
@@ -388,6 +416,7 @@ val dummyWeather = Weather(
 @Preview
 @Composable
 fun WeatherInfo(
+    isMale: Boolean = true,
     weather: Weather = dummyWeather,
     weatherIconVisibility: Boolean = false,
     modifier: Modifier = Modifier
@@ -395,6 +424,7 @@ fun WeatherInfo(
 
     Row(
         modifier = modifier
+            .height(IntrinsicSize.Max)
             .padding(
                 start = (AppConstants.APP_MARGIN).dp, end = (AppConstants.APP_MARGIN * 2).dp,
                 bottom = AppConstants.APP_MARGIN.dp
@@ -406,39 +436,33 @@ fun WeatherInfo(
         val density = LocalDensity.current
 
 
-        Row {
+        Row(modifier = Modifier.fillMaxHeight()) {
 
-            AnimatedVisibility(visible = weatherIconVisibility, enter = slideInHorizontally {
-                with(density){
-                    -50.dp.roundToPx()
-                }
-            }) {
-                Column(modifier = Modifier.padding(top = (AppConstants.APP_MARGIN * 4).dp)) {
-                    Text(
-                        text = "${weather.temperature} \u00B0C",
-                        style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
-                    )
-                    Text(
-                        text = "${weather.city}, ${weather.country}",
-                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
+            Column(modifier = Modifier.padding(top = (AppConstants.APP_MARGIN * 4).dp)) {
+                Text(
+                    text = "${weather.temperature} \u00B0C",
+                    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
+                )
+                Text(
+                    text = "${weather.city}, ${weather.country}",
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
 
-                    )
-                    Text(
-                        text = "${weather.condition}",
-                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
-                    )
-                }
+                )
+                Text(
+                    text = "${weather.condition}",
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
+                )
             }
-
-
-
-
-
-            AnimatedVisibility(visible = weatherIconVisibility, enter = slideInHorizontally{
-                with(density){
-                    50.dp.roundToPx()
-                }
-            }) {
+            AnimatedVisibility(
+                visible = weatherIconVisibility,
+                enter = slideInHorizontally(animationSpec = tween(3000)){
+                    with(density) {
+                        50.dp.roundToPx()
+                    }
+                }+fadeIn(animationSpec = tween(3000)),
+                exit = ExitTransition.None,
+                modifier = Modifier
+            ) {
                 Box(modifier = Modifier.size(52.dp), contentAlignment = Alignment.Center) {
                     Image(
                         painterResource(R.drawable.weather),
@@ -450,24 +474,31 @@ fun WeatherInfo(
             }
         }
 
-        Column(modifier = Modifier.padding(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .border(
-                        2.dp, MaterialTheme.colorScheme.onPrimary,
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier.padding(top = (AppConstants.APP_MARGIN * 4).dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AnimatedVisibility(
+                visible = weatherIconVisibility, enter = expandHorizontally(
+                    expandFrom = Alignment.Start
+                ),exit = ExitTransition.None
             ) {
-                Icon(
-                    Icons.Default.Person,
-                    contentDescription = "Image Not Found",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(AppConstants.APP_MARGIN.dp)
-                )
+                        .size(36.dp)
+                        .border(
+                            2.dp, MaterialTheme.colorScheme.onPrimary,
+                            CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(if (isMale) R.drawable.img_pofile_male else R.drawable.img_profile_female),
+                        contentDescription = "Image Not Found",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                    )
+                }
             }
             Spacer(modifier = Modifier.size(AppConstants.APP_MARGIN.dp))
             Text(
