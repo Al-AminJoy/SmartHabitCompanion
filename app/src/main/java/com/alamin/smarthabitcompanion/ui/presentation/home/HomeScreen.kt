@@ -1,5 +1,6 @@
 package com.alamin.smarthabitcompanion.ui.presentation.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -11,6 +12,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.Image
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -28,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,11 +41,16 @@ import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.LockClock
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.CarouselDefaults
+import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,6 +66,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -79,16 +89,20 @@ import com.alamin.smarthabitcompanion.ui.theme.SandyBrown
 import kotlinx.coroutines.delay
 import java.text.BreakIterator
 import java.text.StringCharacterIterator
+import java.time.LocalDate
 
 private const val TAG = "HomeScreen"
 
-@OptIn(ExperimentalAnimationApi::class)
+@SuppressLint("ConfigurationScreenWidthHeight")
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     sharedViewModel: MainActivityViewModel,
     viewModel: HomeViewModel = hiltViewModel<HomeViewModel>(),
     toHabit: () -> Unit
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val progress by remember { mutableFloatStateOf(0f) }
@@ -153,7 +167,8 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+                        .padding(horizontal = (AppConstants.APP_MARGIN).dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier) {
                         Column(
@@ -194,42 +209,90 @@ fun HomeScreen(
                     }
 
                     Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
+                    val state = rememberCarouselState { uiState.habits.size }
+                    HorizontalUncontainedCarousel(
+                        state = state,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        itemSpacing = AppConstants.APP_MARGIN.dp,
+                        contentPadding = PaddingValues(horizontal = AppConstants.APP_MARGIN.dp),
+                        itemWidth = (screenWidth/2).dp,
+                        flingBehavior = CarouselDefaults.singleAdvanceFlingBehavior(state = state)
+                    ) { index ->
 
-                    ElevatedCard(
-                        shape = MaterialTheme.shapes.medium,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(AppConstants.APP_MARGIN.dp)
+                        val item = uiState.habits[index]
+
+                        ElevatedCard(
+                            //  shape = MaterialTheme.shapes.extraLarge,
+                            modifier = Modifier.maskClip(MaterialTheme.shapes.large)
                         ) {
-                            Text(
-                                "Top Habit Progress",
-                                style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Start),
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = (AppConstants.APP_MARGIN).dp)
-                            )
-                            Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
+                                    .padding(AppConstants.APP_MARGIN.dp)
+                            ) {
 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    Icons.Default.Attractions,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.tertiary
-                                )
-                                Column {
-                                    Row (verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
-                                        Text("Drinking Water")
-                                    }
-
-
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        painterResource(R.drawable.ic_target),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
+                                    Text(
+                                        item.name,
+                                        style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Start),
+                                        modifier = Modifier
+                                            .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+                                    )
                                 }
-                            }
 
+                                Text(
+                                    "Goal : ${
+                                        item.habitRecords.filter {
+                                            it.date.equals(
+                                                (LocalDate.now().toString()), true
+                                            )
+                                        }.sumOf { it.progress }
+                                    }/${item.target}",
+                                    style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+                                )
+                                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
+
+                                LinearProgressIndicator(
+                                    progress = { .6f },
+                                    color = MaterialTheme.colorScheme.primary,
+                                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = .30f),
+                                    strokeCap = StrokeCap.Round,
+                                    modifier = Modifier
+                                        .height((AppConstants.APP_MARGIN / 2).dp)
+                                        .padding(horizontal = AppConstants.APP_MARGIN.dp)
+                                )
+                                Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
+
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.Attractions,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+
+                            }
                         }
                     }
+
+
                 }
 
 
