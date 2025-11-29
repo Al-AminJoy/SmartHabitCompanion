@@ -6,14 +6,13 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,6 +31,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -47,10 +48,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.carousel.CarouselDefaults
-import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
-import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -81,15 +78,12 @@ import com.alamin.smarthabitcompanion.domain.model.Weather
 import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
 import com.alamin.smarthabitcompanion.ui.presentation.components.TypeTextAnimation
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
-import com.alamin.smarthabitcompanion.ui.theme.Green
 import com.alamin.smarthabitcompanion.ui.theme.GreenApple
 import com.alamin.smarthabitcompanion.ui.theme.LavaRed
-import com.alamin.smarthabitcompanion.ui.theme.Red
 import com.alamin.smarthabitcompanion.ui.theme.SandyBrown
 import kotlinx.coroutines.delay
-import java.text.BreakIterator
-import java.text.StringCharacterIterator
 import java.time.LocalDate
+import kotlin.math.absoluteValue
 
 private const val TAG = "HomeScreen"
 
@@ -114,6 +108,44 @@ fun HomeScreen(
             value += .1f
             Log.d(TAG, "HomeScreen: $value")
 
+        }
+
+    }
+
+    val pagerState = rememberPagerState { uiState.habits.size }
+
+   // var isReverse by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(uiState.habits.size) {
+        if (uiState.habits.isNotEmpty()) {
+            var isReverse = false
+            while (true){
+                if (!isReverse){
+                    for (i in 0.. uiState.habits.size){
+                        delay(2000)
+                        val current = pagerState.currentPage +1
+                        Log.d(TAG, "HomeScreen: Not Reversed $i")
+                        if (i == uiState.habits.size){
+                            isReverse = true
+                        }else{
+                            pagerState.animateScrollToPage(current, animationSpec = tween(durationMillis = 1000) )
+                        }
+                    }
+                }else{
+                    for (i in uiState.habits.size downTo 0){
+                        delay(2000)
+                        val current = pagerState.currentPage +1
+                        Log.d(TAG, "HomeScreen:  Reversed $i")
+
+                        if (i == 0){
+                            isReverse = false
+                        }else{
+                            pagerState.animateScrollToPage(current, animationSpec = tween(durationMillis = 1000) )
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -209,23 +241,21 @@ fun HomeScreen(
                     }
 
                     Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
-                    val state = rememberCarouselState { uiState.habits.size }
-                    HorizontalUncontainedCarousel(
-                        state = state,
+                    HorizontalPager (
+                        state = pagerState,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        itemSpacing = AppConstants.APP_MARGIN.dp,
+                            .fillMaxWidth(),
                         contentPadding = PaddingValues(horizontal = AppConstants.APP_MARGIN.dp),
-                        itemWidth = (screenWidth/2).dp,
-                        flingBehavior = CarouselDefaults.singleAdvanceFlingBehavior(state = state)
                     ) { index ->
+                        val pageOffset = pagerState.getOffsetDistanceInPages(index).absoluteValue
 
                         val item = uiState.habits[index]
-
-                        ElevatedCard(
-                            //  shape = MaterialTheme.shapes.extraLarge,
-                            modifier = Modifier.maskClip(MaterialTheme.shapes.large)
+                        ElevatedCard (
+                            shape = MaterialTheme.shapes.medium,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp * (1 - pageOffset))
+                                .padding(AppConstants.APP_MARGIN.dp)
                         ) {
                             Column(
                                 modifier = Modifier
