@@ -1,5 +1,10 @@
 package com.alamin.smarthabitcompanion.ui.presentation.components
 
+import android.opengl.Visibility
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -21,6 +26,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +46,7 @@ import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.ui.theme.DarkGray
 import com.alamin.smarthabitcompanion.ui.theme.GreenApple
 import com.alamin.smarthabitcompanion.ui.theme.LightGrey
+import kotlinx.coroutines.delay
 
 @Preview
 @Composable
@@ -55,98 +66,109 @@ fun AddHabitDialog(
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
     ) {
 
+        var startAnimation by remember { mutableStateOf(false) }
+
+        LaunchedEffect(Unit){
+            delay(100)
+            startAnimation = true
+        }
+
         val focusManager = LocalFocusManager.current
 
-        Column(
-            modifier = modifier
-                .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(AppConstants.APP_MARGIN.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(
-                        Icons.Default.Attractions, contentDescription = null, Modifier.padding(
-                            AppConstants.APP_MARGIN.dp
-                        ), tint = MaterialTheme.colorScheme.onPrimary
+        AnimatedVisibility(startAnimation, enter = scaleIn(animationSpec = tween(1000))) {
+            Column(
+                modifier = modifier
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(AppConstants.APP_MARGIN.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                    ) {
+                        Icon(
+                            Icons.Default.Attractions, contentDescription = null, Modifier.padding(
+                                AppConstants.APP_MARGIN.dp
+                            ), tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
+                    Text(
+                        "Add New Habit",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     )
                 }
+
                 Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
-                Text(
-                    "Add New Habit",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                HabitInput(
+                    "Habit Name",
+                    habitName,
+                    "eg. Exercise",
+                    focusManager = focusManager,
+                    textLimit = AppConstants.ADD_HABIT_NAME_TEXT_LIMIT,
+                    onValueChange = onChangeHabitName
                 )
-            }
-
-            Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
-            HabitInput(
-                "Habit Name",
-                habitName,
-                "eg. Exercise",
-                focusManager = focusManager,
-                textLimit = AppConstants.ADD_HABIT_NAME_TEXT_LIMIT,
-                onValueChange = onChangeHabitName
-            )
-            Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-            HabitInput(
-                "Target",
-                habitTarget.toString(),
-                "eg. 10",
-                focusManager = focusManager,
-                textLimit = AppConstants.ADD_HABIT_TARGET_TEXT_LIMIT,
-                isNumber = true,
-                onValueChange = {
-                    onChangeHabitTarget(it)
-                })
-            Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-            HabitInput(
-                "Target Unit",
-                habitUnit,
-                "eg. Minute",
-                focusManager = focusManager,
-                textLimit = AppConstants.ADD_HABIT_UNIT_TEXT_LIMIT,
-                onValueChange = onChangeHabitUnit
-            )
-            Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-            Row {
-                TextButton(
-                    onClick = {
-                        onChangeHabitName("")
-                        onChangeHabitTarget("")
-                        onChangeHabitUnit("")
-                        onDismiss()
-                    },
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = DarkGray,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = AppConstants.APP_MARGIN.dp)
-                ) {
-                    Text("Cancel", style = MaterialTheme.typography.labelSmall)
+                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
+                HabitInput(
+                    "Target",
+                    habitTarget.toString(),
+                    "eg. 10",
+                    focusManager = focusManager,
+                    textLimit = AppConstants.ADD_HABIT_TARGET_TEXT_LIMIT,
+                    isNumber = true,
+                    onValueChange = {
+                        onChangeHabitTarget(it)
+                    })
+                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
+                HabitInput(
+                    "Target Unit",
+                    habitUnit,
+                    "eg. Minute",
+                    focusManager = focusManager,
+                    textLimit = AppConstants.ADD_HABIT_UNIT_TEXT_LIMIT,
+                    onValueChange = onChangeHabitUnit
+                )
+                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
+                Row {
+                    TextButton(
+                        onClick = {
+                            onChangeHabitName("")
+                            onChangeHabitTarget("")
+                            onChangeHabitUnit("")
+                            onDismiss()
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = DarkGray,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = AppConstants.APP_MARGIN.dp)
+                    ) {
+                        Text("Cancel", style = MaterialTheme.typography.labelSmall)
+                    }
+                    TextButton(
+                        onClick = {
+                            onAddHabit()
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = GreenApple,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ), contentPadding = PaddingValues(vertical = 2.dp, horizontal = 2.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = AppConstants.APP_MARGIN.dp)
+                    ) {
+                        Text("Save", style = MaterialTheme.typography.labelSmall)
+                    }
                 }
-                TextButton(
-                    onClick = {
-                        onAddHabit()
-                    },
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = GreenApple,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ), contentPadding = PaddingValues(vertical = 2.dp, horizontal = 2.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = AppConstants.APP_MARGIN.dp)
-                ) {
-                    Text("Save", style = MaterialTheme.typography.labelSmall)
-                }
-            }
 
+            }
         }
+
+
     }
 }
 

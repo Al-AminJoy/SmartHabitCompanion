@@ -83,7 +83,6 @@ fun HomeScreen(
                 )
             }
 
-
             HabitOverview(initialAnimation = uiState.initialAnimation,uiModel = uiState.todayHabits.toUi())
 
         }
@@ -114,18 +113,14 @@ fun SummaryCard(
         ) {
             Icon(imageVector = icon, contentDescription = null, tint = color)
             Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
-            /* Row(verticalAlignment = Alignment.CenterVertically) {
 
-
-
-             }*/
             AnimatedVisibility(
                 initialAnimation,
                 enter = expandVertically(expandFrom = Alignment.Bottom),
                 exit = ExitTransition.None
             ) {
                 Text(
-                    "$title",
+                    title,
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
                 )
             }

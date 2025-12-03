@@ -63,7 +63,7 @@ fun Habit.toHabitUi(): HabitUiModel {
     return HabitUiModel(
         id = id,
         name = name,
-        target = target,
+        target = target?:1,
         targetUnit = targetUnit,
         streak = streakCount,
         isCompleted = isCompleted,

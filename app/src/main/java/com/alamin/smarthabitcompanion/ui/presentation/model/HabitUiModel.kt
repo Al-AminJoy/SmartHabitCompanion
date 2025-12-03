@@ -8,7 +8,7 @@ data class HabitUiModel(
     val id: Int,
     val name: String,
     val streak: Int,
-    val target: Int?,
+    val target: Int,
     val targetUnit: String?,
     val isCompleted: Boolean,
     val progress: Int,

@@ -34,7 +34,6 @@ private const val TAG = "HabitDashboardPager"
 @Composable
 fun HabitPagerItem(modifier: Modifier = Modifier, habitUiModel: HabitUiModel) {
 
-
     ElevatedCard(
         shape = MaterialTheme.shapes.medium,
         modifier = modifier
@@ -85,8 +84,8 @@ fun HabitPagerItem(modifier: Modifier = Modifier, habitUiModel: HabitUiModel) {
                 trackColor = MaterialTheme.colorScheme.primary.copy(alpha = .30f),
                 strokeCap = StrokeCap.Round,
                 modifier = Modifier
-                    .height((AppConstants.APP_MARGIN / 2).dp)
-                    .padding(horizontal = AppConstants.APP_MARGIN.dp)
+                    .height((AppConstants.APP_MARGIN-2).dp)
+                    .padding(horizontal = (AppConstants.APP_MARGIN * 2).dp)
             )
             Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
 
