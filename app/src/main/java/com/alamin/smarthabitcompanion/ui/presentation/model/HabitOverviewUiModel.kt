@@ -12,5 +12,6 @@ data class HabitOverviewUiModel(
     val highestStreak: Int,
     val lowestStreak: Int,
     val bestStreak: String,
-    val habits: List<Habit>
+    val habits: List<Habit>,
+    val sevenDayHabits: List<Habit>
 )

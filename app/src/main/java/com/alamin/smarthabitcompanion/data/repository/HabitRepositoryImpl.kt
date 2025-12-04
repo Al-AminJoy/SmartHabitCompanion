@@ -1,5 +1,7 @@
 package com.alamin.smarthabitcompanion.data.repository
 
+import com.alamin.smarthabitcompanion.core.utils.Logger
+import com.alamin.smarthabitcompanion.core.utils.extension.checkIsAfter
 import com.alamin.smarthabitcompanion.core.utils.extension.checkIsBefore
 import com.alamin.smarthabitcompanion.data.local.room.dao.HabitDao
 import com.alamin.smarthabitcompanion.data.local.room.dao.HabitRecordDao
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 
+private const val TAG = "HabitRepositoryImpl"
 class HabitRepositoryImpl @Inject constructor(
     private val habitDao: HabitDao,
     private val habitRecordDao: HabitRecordDao
@@ -40,9 +43,11 @@ class HabitRepositoryImpl @Inject constructor(
     override suspend fun getSevenDayHabitRecord(): Flow<List<Habit>> {
         val habits = habitDao.getAllHabits()
         val currentDate = LocalDate.now().toString()
+        val sevenDayBefore = LocalDate.now().minusDays(6).toString()
+
         val todayHabit = habits.map {
             it.map { habit ->
-                val todayRecord = habit.records.filter { it.date.checkIsBefore(currentDate) }.sortedByDescending { it.date }.take(7)
+                val todayRecord = habit.records.filter { it.date.checkIsBefore(currentDate) && it.date.checkIsAfter(sevenDayBefore) }.sortedByDescending { it.date }
                 habit.copy(records = todayRecord).toDomain()
             }
         }

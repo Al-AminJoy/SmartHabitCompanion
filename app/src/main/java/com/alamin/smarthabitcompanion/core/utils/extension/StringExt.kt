@@ -12,10 +12,10 @@ fun String.checkIsAfter(deadline: String): Boolean {
 
     val currentDate = this
 
-    var initialStartDate = deadline.split("-")
-    var startDay = initialStartDate[0]
+    val initialStartDate = deadline.split("-")
+    var startDay = initialStartDate[2]
     var startMonth = initialStartDate[1]
-    var startYear = initialStartDate[2]
+    val startYear = initialStartDate[0]
 
     if (startDay.length == 1){
         startDay = "0${startDay}"
@@ -25,14 +25,14 @@ fun String.checkIsAfter(deadline: String): Boolean {
         startMonth = "0${startMonth}"
     }
 
-    val furnishedStartDate = "${startDay}-${startMonth}-${startYear}"
+    val furnishedStartDate = "${startYear}-${startMonth}-${startDay}"
 
-    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH)
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    val startDate = LocalDateTime.parse(furnishedStartDate, formatter)
+    val startDate = LocalDate.parse(furnishedStartDate, formatter)
     val oneDayBefore = startDate.minusDays(1)
 
-    val targetTime = LocalDateTime.parse(currentDate, formatter)
+    val targetTime = LocalDate.parse(currentDate, formatter)
 
     return targetTime.isAfter(oneDayBefore)
 }

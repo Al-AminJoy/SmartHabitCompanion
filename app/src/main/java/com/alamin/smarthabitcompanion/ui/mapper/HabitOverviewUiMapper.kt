@@ -7,7 +7,7 @@ import com.alamin.smarthabitcompanion.ui.theme.GreenApple
 import com.alamin.smarthabitcompanion.ui.theme.primary
 import java.time.LocalDate
 
-fun List<Habit>.toUi(): HabitOverviewUiModel {
+fun List<Habit>.toUi(sevenDayHabits: List<Habit>): HabitOverviewUiModel {
 
     val highestStreak = this.maxByOrNull { it.streakCount }
     val lowestStreak = this.minByOrNull { it.streakCount }
@@ -45,6 +45,7 @@ fun List<Habit>.toUi(): HabitOverviewUiModel {
         highestStreak?.streakCount ?: 0,
         lowestStreak?.streakCount ?: 0,
         highestStreak?.name ?: "Not Found",
-        this
+        this,
+        sevenDayHabits
     )
 }

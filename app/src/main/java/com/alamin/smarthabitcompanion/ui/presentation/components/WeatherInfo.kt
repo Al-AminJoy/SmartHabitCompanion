@@ -104,7 +104,7 @@ fun WeatherInfo(
         ) {
             AnimatedVisibility(
                 visible = weatherIconVisibility, enter = expandHorizontally(
-                    expandFrom = Alignment.Start
+                    expandFrom = Alignment.End
                 ), exit = ExitTransition.None
             ) {
                 Box(

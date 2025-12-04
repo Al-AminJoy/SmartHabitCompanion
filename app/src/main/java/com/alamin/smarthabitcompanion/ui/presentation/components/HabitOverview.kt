@@ -52,6 +52,7 @@ import com.alamin.smarthabitcompanion.R
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.core.utils.Logger
 import com.alamin.smarthabitcompanion.ui.mapper.toHabitUi
+import com.alamin.smarthabitcompanion.ui.mapper.toWeeklyUi
 import com.alamin.smarthabitcompanion.ui.presentation.home.StreakHighlightCard
 import com.alamin.smarthabitcompanion.ui.presentation.home.SummaryCard
 import com.alamin.smarthabitcompanion.ui.presentation.model.HabitOverviewUiModel
@@ -302,15 +303,10 @@ fun HabitOverview(
 
 
         }
-        Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
-        Text(
-            "Last 7 Days Completion Chart",
-            style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Start),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = (AppConstants.APP_MARGIN).dp)
+        WeeklyCompletionChart(
+            modifier = Modifier,
+            uiModel.sevenDayHabits.toWeeklyUi()
         )
-        Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
 
     }
 }

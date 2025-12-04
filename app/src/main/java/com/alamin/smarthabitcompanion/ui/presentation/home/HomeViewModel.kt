@@ -12,6 +12,7 @@ import com.alamin.smarthabitcompanion.domain.usecase.CurrentWeatherRequestUseCas
 import com.alamin.smarthabitcompanion.domain.usecase.CurrentWeatherUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.GetHabitsUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.HabitCompleteUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.LastSevenDayHabitRecordUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.TodayHabitRecordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val currentWeatherRequestUseCase: CurrentWeatherRequestUseCase,
     private val currentWeatherUseCase: CurrentWeatherUseCase,
-    private val getHabitsUseCase: GetHabitsUseCase,
+    private val getSevenDayHabitRecordUseCase: LastSevenDayHabitRecordUseCase,
     private val getTodayHabitRecordUseCase: TodayHabitRecordUseCase,
     private val habitCompleteUseCase: HabitCompleteUseCase
 ) :
@@ -40,7 +41,7 @@ class HomeViewModel @Inject constructor(
     init {
         requestCurrentWeather()
         observeWeatherData()
-        observeHabits()
+        observeSevenDaysHabits()
         observeTodayHabits()
     }
 
@@ -57,14 +58,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun observeHabits() {
+    private fun observeSevenDaysHabits() {
         viewModelScope.launch(Dispatchers.IO) {
-            getHabitsUseCase.invoke().stateIn(
+            getSevenDayHabitRecordUseCase.invoke().stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(), emptyList()
             ).collectLatest { habits ->
                 if (habits.isNotEmpty()) {
-                    mutableUIState.update { it.copy(habits = habits ) }
+                    mutableUIState.update { it.copy(sevenDayHabits = habits ) }
                 }
             }
 
@@ -119,7 +120,7 @@ data class UIState(
     val successMessage: String? = null,
     val weather: Weather? = null,
     val todayHabits: List<Habit> = arrayListOf(),
-    val habits: List<Habit> = arrayListOf(),
+    val sevenDayHabits: List<Habit> = arrayListOf(),
     val initialAnimation: Boolean = false,
     val isMale: Boolean = true
 )
