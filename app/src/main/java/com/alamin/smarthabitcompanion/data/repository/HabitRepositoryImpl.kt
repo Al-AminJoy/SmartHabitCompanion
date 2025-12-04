@@ -12,12 +12,14 @@ import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.model.HabitRecord
 import com.alamin.smarthabitcompanion.domain.repository.HabitRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 
 private const val TAG = "HabitRepositoryImpl"
+
 class HabitRepositoryImpl @Inject constructor(
     private val habitDao: HabitDao,
     private val habitRecordDao: HabitRecordDao
@@ -31,8 +33,8 @@ class HabitRepositoryImpl @Inject constructor(
         val currentDate = LocalDate.now().toString()
         val todayHabit = habits.map {
             it.map { habit ->
-                    val todayRecord = habit.records.filter { it.date.equals(currentDate, true) }
-                    habit.copy(records = todayRecord).toDomain()
+                val todayRecord = habit.records.filter { it.date.equals(currentDate, true) }
+                habit.copy(records = todayRecord).toDomain()
             }
         }
 
@@ -47,8 +49,10 @@ class HabitRepositoryImpl @Inject constructor(
 
         val todayHabit = habits.map {
             it.map { habit ->
-                val todayRecord = habit.records.filter { it.date.checkIsBefore(currentDate) && it.date.checkIsAfter(sevenDayBefore) }.sortedByDescending { it.date }
-                habit.copy(records = todayRecord).toDomain()
+                val record = habit.records.filter {
+                    it.date.checkIsBefore(currentDate) && it.date.checkIsAfter(sevenDayBefore)
+                }.sortedByDescending { it.date }
+                habit.copy(records = record).toDomain()
             }
         }
         return todayHabit
@@ -67,10 +71,10 @@ class HabitRepositoryImpl @Inject constructor(
         val habit = habitDao.getHabitById(id)
 
         val todayHabit = habit.map { it ->
-            if (it != null){
+            if (it != null) {
                 val todayRecord = it.records.filter { it.date.equals(date, true) }
                 it.copy(records = todayRecord).toDomain()
-            }else{
+            } else {
                 it
             }
         }
@@ -94,6 +98,18 @@ class HabitRepositoryImpl @Inject constructor(
         return habitRecordDao.getRecordByHabitIdAndDate(habitId, date).map {
             it.map { it.toDomain() }
         }
+    }
+
+    override suspend fun getSevenDayHabitRecordById(
+        habitId: Int,
+    ): Flow<List<HabitRecord>> {
+        val currentDate = LocalDate.now().toString()
+        val sevenDayBefore = LocalDate.now().minusDays(6).toString()
+        return habitRecordDao.getLastSevenDayRecordByHabitId(habitId).map { records ->
+           val habitRecords = records.filter { record -> record.date.checkIsBefore(currentDate) && record.date.checkIsAfter(sevenDayBefore) }
+            habitRecords.map { it.toDomain() }
+        }
+
     }
 
     override suspend fun addRecord(record: HabitRecord) {

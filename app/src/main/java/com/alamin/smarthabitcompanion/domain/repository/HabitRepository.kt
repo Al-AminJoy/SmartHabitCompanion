@@ -21,6 +21,9 @@ interface HabitRepository {
 
     suspend fun getHabitRecordsByDate(date: String): Flow<List<HabitRecord>>
     suspend fun getRecordByHabitIdAndDate(habitId: Int, date: String): Flow<List<HabitRecord>>
+
+    suspend fun getSevenDayHabitRecordById(id: Int): Flow<List<HabitRecord>>
+
     suspend fun addRecord(record: HabitRecord)
 
     suspend fun updateRecord(record: HabitRecord)

@@ -52,6 +52,8 @@ fun HabitDetailsScreen(
 
     LaunchedEffect(Unit) {
         sharedViewModel.updateTitle(habit.name)
+        viewModel.updateHabit(habit)
+        viewModel.observeHabit(habit.id)
     }
 
 

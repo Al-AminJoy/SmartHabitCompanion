@@ -3,6 +3,8 @@ package com.alamin.smarthabitcompanion.ui.presentation.habitdetails
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alamin.smarthabitcompanion.domain.model.Habit
+import com.alamin.smarthabitcompanion.domain.model.HabitRecord
+import com.alamin.smarthabitcompanion.domain.usecase.GetSevenDayHabitRecordByIdUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.LastSevenDayHabitRecordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HabitDetailsScreenViewModel @Inject constructor(private val lastSevenDayHabitRecordUseCase: LastSevenDayHabitRecordUseCase) :
+class HabitDetailsScreenViewModel @Inject constructor(private val lastSevenDayHabitRecordByIdUseCase: GetSevenDayHabitRecordByIdUseCase) :
     ViewModel() {
 
     private val mutableState = MutableStateFlow(UIState())
@@ -25,19 +27,29 @@ class HabitDetailsScreenViewModel @Inject constructor(private val lastSevenDayHa
 
 
     init {
+
+    }
+
+    fun observeHabit(habitId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            lastSevenDayHabitRecordUseCase.invoke()
+            lastSevenDayHabitRecordByIdUseCase.invoke(habitId)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
                 .collectLatest { habit ->
                     if (habit.isNotEmpty()) {
-                        mutableState.update { it.copy(habits = habit) }
+                        mutableState.update { it.copy(habitRecord = habit) }
                     }
                 }
         }
     }
 
+    fun updateHabit(habit: Habit) {
+        mutableState.update { it.copy(habit = habit) }
+    }
+
+
 }
 
 data class UIState(
-    val habits: List<Habit> = arrayListOf()
+    val habitRecord: List<HabitRecord> = arrayListOf(),
+    val habit: Habit? = null
 )
