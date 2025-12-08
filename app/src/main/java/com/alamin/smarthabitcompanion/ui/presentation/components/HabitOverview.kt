@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Dataset
@@ -116,6 +118,7 @@ fun HabitOverview(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .clip(
                 RoundedCornerShape(
                     topStart = (AppConstants.APP_MARGIN * 2).dp,
@@ -127,7 +130,7 @@ fun HabitOverview(
             )
     ) {
 
-        Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
+        Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
 
         Row(
             modifier = Modifier
@@ -142,7 +145,7 @@ fun HabitOverview(
                 ) {
                     Text(
                         "${progressValue}%",
-                        style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center),
+                        style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
                         modifier = Modifier
                     )
                     Text(
@@ -163,7 +166,7 @@ fun HabitOverview(
                 CircularProgressIndicator(
                     progress = { (progressValue.toFloat() / 100f) },
                     modifier = Modifier
-                        .size(130.dp),
+                        .size(100.dp),
                     color = uiModel.progressColor,
                     trackColor = uiModel.progressColor.copy(alpha = .30f),
                     strokeCap = StrokeCap.Round,
@@ -195,8 +198,8 @@ fun HabitOverview(
 
         }
 
+        Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
 
-        Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN * 2).dp))
         Text(
             "Today's Summary",
             style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Start),
@@ -305,7 +308,7 @@ fun HabitOverview(
         }
         WeeklyCompletionChart(
             modifier = Modifier,
-            uiModel.sevenDayHabits.toWeeklyUi()
+            uiModel.sevenDayHabits.toWeeklyUi(initialAnimation)
         )
 
     }

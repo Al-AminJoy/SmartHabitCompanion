@@ -1,11 +1,18 @@
 package com.alamin.smarthabitcompanion.ui.mapper
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
+import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.core.utils.Logger
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.ui.presentation.model.WeeklyCompletionUiModel
 
 private const val TAG = "WeeklyHabitUiMapper"
-fun List<Habit>.toWeeklyUi(): WeeklyCompletionUiModel{
+@Composable
+fun List<Habit>.toWeeklyUi(initialAnimation: Boolean): WeeklyCompletionUiModel{
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+
 
     val completionPair = arrayListOf<Pair<String, Boolean>>()
 
@@ -22,11 +29,23 @@ fun List<Habit>.toWeeklyUi(): WeeklyCompletionUiModel{
 
     val dayWiseCompletion = arrayListOf<Pair<String,Int>>()
     for (dayRecord in dayWiseGroup){
-        val pair= Pair(dayRecord.key,dayRecord.value.count { it.second })
+        val completionPercent = (dayRecord.value.count { it.second }.toFloat()/this.size.toFloat()) * 100
+        val pair= Pair(dayRecord.key,completionPercent.toInt())
         dayWiseCompletion.add(pair)
     }
 
+    var barWidth = 0
+
+    if (dayWiseCompletion.isNotEmpty()){
+        val margin = AppConstants.APP_MARGIN
+        val screenWidthWithoutMargin = screenWidth-margin
+        barWidth = screenWidthWithoutMargin/dayWiseCompletion.size
+    }
+
     return WeeklyCompletionUiModel(
-        dayWiseCompletion
+        initialAnimation,
+        dayWiseCompletion,
+        barWidth,
+
     )
 }

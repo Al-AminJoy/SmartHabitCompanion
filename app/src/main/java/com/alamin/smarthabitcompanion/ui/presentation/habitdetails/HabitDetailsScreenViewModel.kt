@@ -2,6 +2,7 @@ package com.alamin.smarthabitcompanion.ui.presentation.habitdetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alamin.smarthabitcompanion.core.utils.Logger
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.domain.model.HabitRecord
 import com.alamin.smarthabitcompanion.domain.usecase.GetSevenDayHabitRecordByIdUseCase
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val TAG = "HabitDetailsScreenViewModel"
 @HiltViewModel
 class HabitDetailsScreenViewModel @Inject constructor(private val lastSevenDayHabitRecordByIdUseCase: GetSevenDayHabitRecordByIdUseCase) :
     ViewModel() {
@@ -24,7 +26,6 @@ class HabitDetailsScreenViewModel @Inject constructor(private val lastSevenDayHa
     private val mutableState = MutableStateFlow(UIState())
 
     val uiState = mutableState.asStateFlow()
-
 
     init {
 
@@ -36,6 +37,7 @@ class HabitDetailsScreenViewModel @Inject constructor(private val lastSevenDayHa
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
                 .collectLatest { habit ->
                     if (habit.isNotEmpty()) {
+                        Logger.log(TAG, "Habit : $habit")
                         mutableState.update { it.copy(habitRecord = habit) }
                     }
                 }

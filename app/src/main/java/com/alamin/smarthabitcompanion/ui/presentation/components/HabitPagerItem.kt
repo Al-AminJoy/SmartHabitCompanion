@@ -56,7 +56,7 @@ fun HabitPagerItem(modifier: Modifier = Modifier, habitUiModel: HabitUiModel) {
                 )
                 Text(
                     habitUiModel.name,
-                    style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Start),
+                    style = MaterialTheme.typography.labelMedium.copy(textAlign = TextAlign.Start),
                     modifier = Modifier
                         .padding(horizontal = (AppConstants.APP_MARGIN).dp)
                 )
@@ -70,7 +70,7 @@ fun HabitPagerItem(modifier: Modifier = Modifier, habitUiModel: HabitUiModel) {
 
             Text(
                 "Goal : ${achieved}/${target}",
-                style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
+                style = MaterialTheme.typography.labelMedium.copy(textAlign = TextAlign.Center),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = (AppConstants.APP_MARGIN).dp)
@@ -87,7 +87,7 @@ fun HabitPagerItem(modifier: Modifier = Modifier, habitUiModel: HabitUiModel) {
                     .height((AppConstants.APP_MARGIN-2).dp)
                     .padding(horizontal = (AppConstants.APP_MARGIN * 2).dp)
             )
-            Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN).dp))
+            Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN/2).dp))
 
             Box(
                 modifier = Modifier.fillMaxWidth(),
