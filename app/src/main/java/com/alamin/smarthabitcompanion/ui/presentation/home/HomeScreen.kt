@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -116,31 +117,19 @@ fun SummaryCard(
         ) {
             Icon(imageVector = icon, contentDescription = null, tint = color)
             Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
-
-            AnimatedVisibility(
-                initialAnimation,
-                enter = expandVertically(expandFrom = Alignment.Bottom),
-                exit = ExitTransition.None
-            ) {
-                Text(
-                    title,
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
-                )
-            }
+            Text(
+                title,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+            )
+         
             Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
-            AnimatedVisibility(
-                initialAnimation,
-                enter = expandVertically(expandFrom = Alignment.Top),
-                exit = ExitTransition.None
-            ) {
-                Text(
+            Text(
                     "$value",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = color
-                    )
-                )
-            }
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.SemiBold,
+                color = color
+            )
+            )
 
         }
     }
@@ -174,40 +163,27 @@ fun StreakHighlightCard(
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
-
-            AnimatedVisibility(
-                initialAnimation,
-                enter = expandVertically(expandFrom = Alignment.Bottom),
-                exit = ExitTransition.None
-            ) {
-                Text(
-                    title,
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
-                )
-            }
+            Text(
+                title,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+            )
 
             Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
-            AnimatedVisibility(
-                initialAnimation,
-                enter = expandVertically(expandFrom = Alignment.Top),
-                exit = ExitTransition.None
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        value,
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            color = color
-                        )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    value,
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = color
                     )
-                    Text(
-                        " $unit",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.SemiBold,
-                        )
+                )
+                Text(
+                    " $unit",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
                     )
+                )
 
-                }
 
             }
         }

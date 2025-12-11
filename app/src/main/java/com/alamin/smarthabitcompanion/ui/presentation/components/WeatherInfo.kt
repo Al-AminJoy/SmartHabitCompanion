@@ -2,6 +2,7 @@ package com.alamin.smarthabitcompanion.ui.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -49,7 +50,7 @@ fun WeatherInfo(
             .padding(
                 start = (AppConstants.APP_MARGIN).dp, end = (AppConstants.APP_MARGIN * 2).dp,
                 bottom = AppConstants.APP_MARGIN.dp
-            ),
+            ).animateContentSize(),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.Bottom
     ) {
