@@ -29,17 +29,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.ui.mapper.toUi
-import com.alamin.smarthabitcompanion.ui.mapper.toWeeklyUi
 import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
 import com.alamin.smarthabitcompanion.ui.presentation.components.HabitOverview
 import com.alamin.smarthabitcompanion.ui.presentation.components.WeatherInfo
-import com.alamin.smarthabitcompanion.ui.presentation.components.WeeklyCompletionChart
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
 import kotlinx.coroutines.delay
 
