@@ -1,7 +1,13 @@
 package com.alamin.smarthabitcompanion.ui.presentation.habitdetails
 
+import android.R.attr.textSize
 import android.annotation.SuppressLint
 import android.app.LocaleConfig
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +36,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +57,9 @@ import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.core.utils.Logger
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
+import com.alamin.smarthabitcompanion.ui.theme.primary
+import kotlinx.coroutines.delay
+import kotlin.math.absoluteValue
 
 private const val TAG = "HabitDetailsScreen"
 
@@ -52,7 +67,8 @@ private const val TAG = "HabitDetailsScreen"
 @Composable
 fun HabitDetailsScreen(
     sharedViewModel: MainActivityViewModel,
-    viewModel: HabitDetailsScreenViewModel = hiltViewModel(), habit: Habit
+    viewModel: HabitDetailsScreenViewModel = hiltViewModel(),
+    habit: Habit
 ) {
 
     val config = LocalConfiguration.current
@@ -67,17 +83,46 @@ fun HabitDetailsScreen(
         viewModel.observeHabit(habit.id)
     }
 
+    var startAnimation by remember { mutableStateOf(false) }
+    var initialAnimation by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.habitRecord) {
+        if (uiState.habitRecord.isNotEmpty()) {
+            startAnimation = true
+        }
+    }
+
+    LaunchedEffect(initialAnimation) {
+        delay(500)
+        initialAnimation = true
+    }
+
+
+    val completePercent = if (habit.habitRecords.isEmpty()) {
+        0.0f
+    } else {
+        (habit.habitRecords.sumOf { it.progress }.toFloat() / (habit.target ?: 1)) * 100
+    }
+
+    val completeProgress by
+        animateFloatAsState(
+            if (startAnimation) completePercent else 0f,
+            tween(1000, easing = LinearEasing),
+
+        )
+
 
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary
     ) {
 
+
         Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(
-                    progress = { .30f },
+                    progress = { completeProgress.absoluteValue / 100 },
                     modifier = Modifier
-                        .size((height / 5).dp),
+                        .size((height / 6).dp),
                     color = MaterialTheme.colorScheme.secondary,
                     strokeWidth = 8.dp,
                     trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = .60f),
@@ -86,17 +131,17 @@ fun HabitDetailsScreen(
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(imageVector = Icons.Default.Attractions, contentDescription = null)
-                    Spacer(modifier = Modifier.height(AppConstants.APP_MARGIN.dp))
+                    Spacer(modifier = Modifier.height(((AppConstants.APP_MARGIN/2)).dp))
                     Text(
                         "${habit.habitRecords.sumOf { it.progress }}/${habit.target ?: 1}",
                         style = MaterialTheme.typography.titleLarge
                     )
                     if (!habit.targetUnit.isNullOrEmpty()) {
-                        Spacer(modifier = Modifier.height(AppConstants.APP_MARGIN.dp))
+                        Spacer(modifier = Modifier.height((AppConstants.APP_MARGIN/2).dp))
                         Text(habit.targetUnit, style = MaterialTheme.typography.titleMedium)
                     }
-                    Spacer(modifier = Modifier.height(AppConstants.APP_MARGIN.dp))
-                    Text("daily goal", style = MaterialTheme.typography.titleMedium)
+                    Spacer(modifier = Modifier.height((AppConstants.APP_MARGIN/2).dp))
+                    Text("Today", style = MaterialTheme.typography.titleMedium)
                 }
             }
 
@@ -132,9 +177,11 @@ fun HabitDetailsScreen(
                     .background(MaterialTheme.colorScheme.onPrimary)
             ) {
 
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
                     Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
                     Text(
                         "Weekly Performance",
@@ -142,9 +189,8 @@ fun HabitDetailsScreen(
                         modifier = Modifier.padding(horizontal = AppConstants.APP_MARGIN.dp)
                     )
                     Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
+
                     var barWidth = 0
-
-
 
                     if (uiState.habitRecord.isNotEmpty()) {
                         Row(
@@ -153,6 +199,7 @@ fun HabitDetailsScreen(
                                 .padding(horizontal = AppConstants.APP_MARGIN.dp),
                             verticalAlignment = Alignment.Bottom
                         ) {
+
                             val habitGroup = uiState.habitRecord.groupBy { it.date }
 
                             if (uiState.habitRecord.isNotEmpty()) {
@@ -161,32 +208,69 @@ fun HabitDetailsScreen(
                                 barWidth = screenWidthWithoutMargin / habitGroup.size
                             }
 
-                            habitGroup.entries.reversed().forEachIndexed { index,group ->
+                            val barAnimation =
+                                remember(habitGroup) { List(habitGroup.size) { Animatable(0F) } }
+
+
+                            habitGroup.entries.sortedBy { it.key }.forEachIndexed { index, group ->
                                 val totalProgress = group.value.sumOf { it.progress }
                                 val progressPercent =
                                     (totalProgress.toFloat() / (habit.target ?: 1).toFloat()) * 100
                                 Column(
                                     Modifier, horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text(
-                                        text = "${progressPercent.toInt()}%",
-                                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onBackground,fontWeight = FontWeight.SemiBold)
-                                    )
+
                                     Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
-                                    Spacer(
+
+                                    LaunchedEffect(startAnimation) {
+                                        barAnimation[index].animateTo(
+                                            progressPercent,
+                                            animationSpec = tween(
+                                                durationMillis = 800,
+                                                easing = LinearEasing
+                                            )
+                                        )
+                                    }
+
+                                    Box(
                                         modifier = Modifier
-                                            .height(progressPercent.dp)
+                                            .height(100.dp)
                                             .width(barWidth.dp)
-                                            .padding(horizontal = AppConstants.APP_MARGIN.dp)
-                                            .drawBehind {
-                                                this.drawRect(
-                                                    color = AppConstants.chartColor[index],
+                                            .padding(horizontal = AppConstants.APP_MARGIN.dp),
+                                        contentAlignment = Alignment.BottomCenter
+                                    ) {
+                                        Canvas(
+                                            modifier = Modifier
+                                                .height(barAnimation[index].value.dp)
+                                                .width(barWidth.dp)
+                                        ) {
+                                            drawRect(
+                                                color = AppConstants.chartColor[index],
+                                            )
+                                            drawContext.canvas.nativeCanvas.apply {
+                                                val paint = android.graphics.Paint().apply {
+                                                    color = android.graphics.Color.GRAY
+                                                    textSize = 8.dp.toPx()
+                                                    textAlign = android.graphics.Paint.Align.CENTER
+                                                    isFakeBoldText = true
+                                                }
+                                                drawText(
+                                                    "${progressPercent.toInt()}%",
+                                                    size.width / 2,
+                                                    -10f,
+                                                    paint
                                                 )
-                                            })
+                                            }
+                                        }
+                                    }
+
                                     Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
                                     Text(
-                                        text = group.key,
-                                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.SemiBold)
+                                        text = "${group.key.split("-")[2]}-${group.key.split("-")[1]}",
+                                        style = MaterialTheme.typography.labelMedium.copy(
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
                                     )
                                 }
                                 Logger.log(TAG, "HabitDetailsScreen: $index")

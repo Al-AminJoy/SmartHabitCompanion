@@ -64,7 +64,7 @@ fun Habit.toHabitUi(): HabitUiModel {
         id = id,
         name = name,
         target = target?:1,
-        targetUnit = targetUnit,
+        targetUnit = targetUnit?:"",
         streak = streakCount,
         isCompleted = isCompleted,
         progress = habitProgress,
