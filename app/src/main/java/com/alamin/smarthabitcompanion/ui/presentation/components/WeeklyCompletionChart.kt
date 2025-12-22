@@ -103,7 +103,7 @@ fun WeeklyCompletionChart(modifier: Modifier = Modifier, uiModel: WeeklyCompleti
                                 drawContext.canvas.nativeCanvas.apply {
                                     val paint = Paint().apply {
                                         color = Color.GRAY
-                                        textSize = 8.dp.toPx()
+                                        textSize = 12.dp.toPx()
                                         textAlign = Paint.Align.CENTER
                                         isFakeBoldText = true
                                     }
