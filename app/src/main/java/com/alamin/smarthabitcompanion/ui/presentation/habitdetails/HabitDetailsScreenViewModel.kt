@@ -27,9 +27,6 @@ class HabitDetailsScreenViewModel @Inject constructor(private val lastSevenDayHa
 
     val uiState = mutableState.asStateFlow()
 
-    init {
-
-    }
 
     fun observeHabit(habitId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -37,7 +34,6 @@ class HabitDetailsScreenViewModel @Inject constructor(private val lastSevenDayHa
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
                 .collectLatest { habit ->
                     if (habit.isNotEmpty()) {
-                        Logger.log(TAG, "Habit : $habit")
                         mutableState.update { it.copy(habitRecord = habit) }
                     }
                 }

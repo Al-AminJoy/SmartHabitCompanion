@@ -1,15 +1,12 @@
 package com.alamin.smarthabitcompanion.ui.presentation.habitdetails
 
-import android.R.attr.textSize
 import android.annotation.SuppressLint
-import android.app.LocaleConfig
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,9 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalConfiguration
@@ -56,8 +50,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.core.utils.Logger
 import com.alamin.smarthabitcompanion.domain.model.Habit
+import com.alamin.smarthabitcompanion.ui.mapper.toHabitDetailsUi
+import com.alamin.smarthabitcompanion.ui.presentation.components.HabitDetails
 import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
-import com.alamin.smarthabitcompanion.ui.theme.primary
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
@@ -71,10 +66,6 @@ fun HabitDetailsScreen(
     habit: Habit
 ) {
 
-    val config = LocalConfiguration.current
-    val height = config.screenHeightDp
-    val screenWidth = config.screenWidthDp
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -83,208 +74,10 @@ fun HabitDetailsScreen(
         viewModel.observeHabit(habit.id)
     }
 
-    var startAnimation by remember { mutableStateOf(false) }
-    var initialAnimation by remember { mutableStateOf(false) }
-
-    LaunchedEffect(uiState.habitRecord) {
-        if (uiState.habitRecord.isNotEmpty()) {
-            startAnimation = true
-        }
-    }
-
-    LaunchedEffect(initialAnimation) {
-        delay(500)
-        initialAnimation = true
-    }
-
-
-    val completePercent = if (habit.habitRecords.isEmpty()) {
-        0.0f
-    } else {
-        (habit.habitRecords.sumOf { it.progress }.toFloat() / (habit.target ?: 1)) * 100
-    }
-
-    val completeProgress by
-        animateFloatAsState(
-            if (startAnimation) completePercent else 0f,
-            tween(1000, easing = LinearEasing),
-
-        )
-
-
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary
     ) {
-
-
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(
-                    progress = { completeProgress.absoluteValue / 100 },
-                    modifier = Modifier
-                        .size((height / 6).dp),
-                    color = MaterialTheme.colorScheme.secondary,
-                    strokeWidth = 8.dp,
-                    trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = .60f),
-                    strokeCap = StrokeCap.Round,
-                )
-
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(imageVector = Icons.Default.Attractions, contentDescription = null)
-                    Spacer(modifier = Modifier.height(((AppConstants.APP_MARGIN/2)).dp))
-                    Text(
-                        "${habit.habitRecords.sumOf { it.progress }}/${habit.target ?: 1}",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    if (!habit.targetUnit.isNullOrEmpty()) {
-                        Spacer(modifier = Modifier.height((AppConstants.APP_MARGIN/2).dp))
-                        Text(habit.targetUnit, style = MaterialTheme.typography.titleMedium)
-                    }
-                    Spacer(modifier = Modifier.height((AppConstants.APP_MARGIN/2).dp))
-                    Text("Today", style = MaterialTheme.typography.titleMedium)
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocalFireDepartment,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.tertiary
-                )
-
-                Text(
-                    "${habit.streakCount} days streak",
-                    style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.End),
-                    modifier = Modifier.padding(AppConstants.APP_MARGIN.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(AppConstants.APP_MARGIN.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = (AppConstants.APP_MARGIN * 2).dp,
-                            topEnd = (AppConstants.APP_MARGIN * 2).dp
-                        )
-                    )
-                    .background(MaterialTheme.colorScheme.onPrimary)
-            ) {
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
-                    Text(
-                        "Weekly Performance",
-                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onBackground),
-                        modifier = Modifier.padding(horizontal = AppConstants.APP_MARGIN.dp)
-                    )
-                    Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
-
-                    var barWidth = 0
-
-                    if (uiState.habitRecord.isNotEmpty()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = AppConstants.APP_MARGIN.dp),
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-
-                            val habitGroup = uiState.habitRecord.groupBy { it.date }
-
-                            if (uiState.habitRecord.isNotEmpty()) {
-                                val margin = AppConstants.APP_MARGIN
-                                val screenWidthWithoutMargin = screenWidth - margin
-                                barWidth = screenWidthWithoutMargin / habitGroup.size
-                            }
-
-                            val barAnimation =
-                                remember(habitGroup) { List(habitGroup.size) { Animatable(0F) } }
-
-
-                            habitGroup.entries.sortedBy { it.key }.forEachIndexed { index, group ->
-                                val totalProgress = group.value.sumOf { it.progress }
-                                val progressPercent =
-                                    (totalProgress.toFloat() / (habit.target ?: 1).toFloat()) * 100
-                                Column(
-                                    Modifier, horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-
-                                    Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
-
-                                    LaunchedEffect(startAnimation) {
-                                        barAnimation[index].animateTo(
-                                            progressPercent,
-                                            animationSpec = tween(
-                                                durationMillis = 800,
-                                                easing = LinearEasing
-                                            )
-                                        )
-                                    }
-
-                                    Box(
-                                        modifier = Modifier
-                                            .height(100.dp)
-                                            .width(barWidth.dp)
-                                            .padding(horizontal = AppConstants.APP_MARGIN.dp),
-                                        contentAlignment = Alignment.BottomCenter
-                                    ) {
-                                        Canvas(
-                                            modifier = Modifier
-                                                .height(barAnimation[index].value.dp)
-                                                .width(barWidth.dp)
-                                        ) {
-                                            drawRect(
-                                                color = AppConstants.chartColor[index],
-                                            )
-                                            drawContext.canvas.nativeCanvas.apply {
-                                                val paint = android.graphics.Paint().apply {
-                                                    color = android.graphics.Color.GRAY
-                                                    textSize = 8.dp.toPx()
-                                                    textAlign = android.graphics.Paint.Align.CENTER
-                                                    isFakeBoldText = true
-                                                }
-                                                drawText(
-                                                    "${progressPercent.toInt()}%",
-                                                    size.width / 2,
-                                                    -10f,
-                                                    paint
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    Spacer(modifier = Modifier.size((AppConstants.APP_MARGIN / 2).dp))
-                                    Text(
-                                        text = "${group.key.split("-")[2]}-${group.key.split("-")[1]}",
-                                        style = MaterialTheme.typography.labelMedium.copy(
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
-                                    )
-                                }
-                                Logger.log(TAG, "HabitDetailsScreen: $index")
-                            }
-
-                        }
-                    }
-                }
-
-            }
-
-        }
-
-
+        HabitDetails(modifier = Modifier, uiModel = uiState.habitRecord.toHabitDetailsUi(habit))
     }
 
 }

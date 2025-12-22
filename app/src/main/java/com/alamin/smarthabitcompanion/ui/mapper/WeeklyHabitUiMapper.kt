@@ -2,16 +2,17 @@ package com.alamin.smarthabitcompanion.ui.mapper
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
-import com.alamin.smarthabitcompanion.core.utils.Logger
 import com.alamin.smarthabitcompanion.domain.model.Habit
 import com.alamin.smarthabitcompanion.ui.presentation.model.WeeklyCompletionUiModel
 
 private const val TAG = "WeeklyHabitUiMapper"
 @Composable
 fun List<Habit>.toWeeklyUi(initialAnimation: Boolean): WeeklyCompletionUiModel{
+    val config = LocalConfiguration.current
 
-    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val screenWidth = config.screenWidthDp
 
 
     val completionPair = arrayListOf<Pair<String, Boolean>>()

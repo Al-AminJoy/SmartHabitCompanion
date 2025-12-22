@@ -12,5 +12,5 @@ import androidx.compose.ui.graphics.vector.ImageVector
 enum class NavigationDestinations(val value: String,val icon: ImageVector,val selectedIcon: ImageVector) {
      HOME("Home",Icons.Outlined.Home,Icons.Filled.Home),
      HABITS("Habits",Icons.Filled.FormatListBulleted,Icons.Outlined.FormatListBulleted),
-     PROFILE("Profile", Icons.Outlined.Person,Icons.Filled.Person)
+   //  PROFILE("Profile", Icons.Outlined.Person,Icons.Filled.Person)
 }

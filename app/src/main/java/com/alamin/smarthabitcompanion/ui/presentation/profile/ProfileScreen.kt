@@ -13,7 +13,7 @@ import com.alamin.smarthabitcompanion.ui.presentation.main.MainActivityViewModel
 @Composable
 fun ProfileScreen(sharedViewModel: MainActivityViewModel, viewModel: ProfileViewModel = hiltViewModel(), toEditProfile : ()-> Unit) {
     LaunchedEffect(Unit) {
-        sharedViewModel.updateTitle(NavigationDestinations.PROFILE.value)
+        //sharedViewModel.updateTitle(NavigationDestinations.PROFILE.value)
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {

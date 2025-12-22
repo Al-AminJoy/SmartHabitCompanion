@@ -70,18 +70,17 @@ class MainActivity : ComponentActivity() {
                                 Text(uiState.title)
                             }
                         }, actions = {
-                            if (uiState.title.equals(NavigationDestinations.HOME.value,true)){
-                                IconButton(onClick = {}) {
-                                    Icon(Icons.Default.Menu, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-                                }
-                            }
+
                         }, navigationIcon = {
                             if (!uiState.title.equals(NavigationDestinations.HOME.value, true)) {
+                                selectedNavigationDestination = NavigationDestinations.HABITS.ordinal
                                 IconButton(onClick = {
                                     navController.navigateUp()
                                 }) {
                                     Icon(Icons.Outlined.ArrowBackIosNew, contentDescription = null,tint = MaterialTheme.colorScheme.onPrimary)
                                 }
+                            }else{
+                                selectedNavigationDestination = NavigationDestinations.HOME.ordinal
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary, titleContentColor = MaterialTheme.colorScheme.onPrimary)
@@ -94,7 +93,7 @@ class MainActivity : ComponentActivity() {
                         ) || uiState.title.equals(
                             NavigationDestinations.HABITS.value,
                             true
-                        ) || uiState.title.equals(NavigationDestinations.PROFILE.value, true)
+                        )// || uiState.title.equals(NavigationDestinations.PROFILE.value, true)
                     ) {
                         NavigationBar(
                             windowInsets = NavigationBarDefaults.windowInsets,
@@ -114,10 +113,6 @@ class MainActivity : ComponentActivity() {
 
                                             1 -> {
                                                 navController.navigate(Destinations.Habits)
-                                            }
-
-                                            2 -> {
-                                                navController.navigate(Destinations.Profile)
                                             }
                                         }
                                     },

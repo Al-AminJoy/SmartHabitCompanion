@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.animation.core.EaseInCirc
 import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -112,7 +113,7 @@ fun HabitOverview(
 
     val progressValue by animateIntAsState(
         if (initialAnimation) uiModel.completionPercent else 0,
-        animationSpec = tween(durationMillis = 2000, easing = EaseOutQuad)
+        animationSpec = tween(durationMillis = 2000, easing = LinearEasing)
     )
 
     Column(
