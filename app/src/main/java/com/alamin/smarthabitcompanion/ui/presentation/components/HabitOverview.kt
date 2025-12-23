@@ -127,7 +127,7 @@ fun HabitOverview(
                 )
             )
             .background(
-                MaterialTheme.colorScheme.onPrimary
+                MaterialTheme.colorScheme.background
             )
     ) {
 

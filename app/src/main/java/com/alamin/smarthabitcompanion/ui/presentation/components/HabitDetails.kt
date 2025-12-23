@@ -140,6 +140,7 @@ fun HabitDetails(modifier: Modifier = Modifier,uiModel: HabitDetailsUiModel) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
             ) {
                 Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))

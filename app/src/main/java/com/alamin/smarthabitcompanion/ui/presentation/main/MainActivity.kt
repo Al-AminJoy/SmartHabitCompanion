@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            SmartHabitCompanionTheme(darkTheme = false) {
+            SmartHabitCompanionTheme() {
                 Scaffold(topBar = {
                     TopAppBar(
                         title = {
