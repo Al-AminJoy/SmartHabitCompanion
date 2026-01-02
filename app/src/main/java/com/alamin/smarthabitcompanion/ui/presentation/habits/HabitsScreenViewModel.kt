@@ -33,9 +33,9 @@ class HabitsScreenViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val mutableUiSate = MutableStateFlow(UiState())
+    private val mutableUiState = MutableStateFlow(UiState())
 
-    val uiState = mutableUiSate.asStateFlow()
+    val uiState = mutableUiState.asStateFlow()
 
     init {
 
@@ -46,7 +46,7 @@ class HabitsScreenViewModel @Inject constructor(
                 emptyList()
             ).collectLatest { habits ->
                 if (habits.isNotEmpty()) {
-                    mutableUiSate.update {
+                    mutableUiState.update {
                         it.copy(habits = habits.map {
                             habitCompleteUseCase.invoke(
                                 it
@@ -59,19 +59,19 @@ class HabitsScreenViewModel @Inject constructor(
     }
 
     fun onNameChange(value: String) {
-        mutableUiSate.update { it.copy(habitName = value) }
+        mutableUiState.update { it.copy(habitName = value) }
     }
 
     fun onTargetChange(value: String) {
-        mutableUiSate.update { it.copy(target = value) }
+        mutableUiState.update { it.copy(target = value) }
     }
 
     fun clearHabitInput() {
-        mutableUiSate.update { it.copy(habitName = "", target = "", targetUnit = "") }
+        mutableUiState.update { it.copy(habitName = "", target = "", targetUnit = "") }
     }
 
     fun onTargetUnitChange(value: String) {
-        mutableUiSate.update { it.copy(targetUnit = value) }
+        mutableUiState.update { it.copy(targetUnit = value) }
     }
 
 
@@ -79,13 +79,13 @@ class HabitsScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val state = uiState.value
             if (state.habitName.isEmpty()) {
-                mutableUiSate.update { it.copy(message = Pair(false, "Please Enter a Habit Name")) }
+                mutableUiState.update { it.copy(message = Pair(false, "Please Enter a Habit Name")) }
             } else if (state.habitName.length > AppConstants.ADD_HABIT_NAME_TEXT_LIMIT) {
-                mutableUiSate.update { it.copy(message = Pair(false, "Habit Name is Too Long")) }
+                mutableUiState.update { it.copy(message = Pair(false, "Habit Name is Too Long")) }
             } else if (state.target.length > AppConstants.ADD_HABIT_TARGET_TEXT_LIMIT) {
-                mutableUiSate.update { it.copy(message = Pair(false, "Habit Target is Too Long")) }
+                mutableUiState.update { it.copy(message = Pair(false, "Habit Target is Too Long")) }
             } else if (state.targetUnit.length > AppConstants.ADD_HABIT_UNIT_TEXT_LIMIT) {
-                mutableUiSate.update {
+                mutableUiState.update {
                     it.copy(
                         message = Pair(
                             false,
@@ -122,12 +122,12 @@ class HabitsScreenViewModel @Inject constructor(
     }
 
     fun showConfirmDeleteDialog(habit: Habit?) {
-        mutableUiSate.update { it.copy(showConfirmDeletedDialog = habit) }
+        mutableUiState.update { it.copy(showConfirmDeletedDialog = habit) }
     }
 
 
     fun messageShown() {
-        mutableUiSate.update { it.copy(message = null) }
+        mutableUiState.update { it.copy(message = null) }
     }
 
 

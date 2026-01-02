@@ -20,9 +20,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Attractions
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -50,25 +52,23 @@ import kotlinx.coroutines.delay
 
 @Preview
 @Composable
-fun AddHabitDialog(
+fun PersonalInformationDialog(
     modifier: Modifier = Modifier,
-    habitName: String = "",
-    habitTarget: String = "",
-    habitUnit: String = "",
-    onChangeHabitName: (String) -> Unit = {},
-    onChangeHabitTarget: (String) -> Unit = {},
-    onChangeHabitUnit: (String) -> Unit = {},
-    onAddHabit: () -> Unit = {},
+    name: String = "",
+    isMale: Boolean = true,
+    onChangeName: (String) -> Unit = {},
+    onSelectGender: (Boolean) -> Unit = {},
+    onAddInformation: () -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
     Dialog(
         onDismissRequest = { onDismiss() },
-        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
     ) {
 
         var startAnimation by remember { mutableStateOf(false) }
 
-        LaunchedEffect(Unit){
+        LaunchedEffect(Unit) {
             delay(100)
             startAnimation = true
         }
@@ -89,72 +89,66 @@ fun AddHabitDialog(
                             .background(MaterialTheme.colorScheme.primary)
                     ) {
                         Icon(
-                            Icons.Default.Attractions, contentDescription = null, Modifier.padding(
+                            Icons.Default.Person, contentDescription = null, Modifier.padding(
                                 AppConstants.APP_MARGIN.dp
                             ), tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
                     Text(
-                        "Add New Habit",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                        "Personal Information",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     )
                 }
 
                 Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
-                HabitInput(
-                    "Habit Name",
-                    habitName,
-                    "eg. Exercise",
+                InformationInput(
+                    "Your Name",
+                    name,
+                    "eg. John Doe",
                     focusManager = focusManager,
-                    textLimit = AppConstants.ADD_HABIT_NAME_TEXT_LIMIT,
-                    onValueChange = onChangeHabitName
+                    textLimit = AppConstants.NAME_TEXT_LIMIT,
+                    onValueChange = onChangeName
                 )
                 Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-                HabitInput(
-                    "Target",
-                    habitTarget.toString(),
-                    "eg. 10",
-                    focusManager = focusManager,
-                    textLimit = AppConstants.ADD_HABIT_TARGET_TEXT_LIMIT,
-                    isNumber = true,
-                    onValueChange = {
-                        onChangeHabitTarget(it)
-                    })
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        onClick = { onSelectGender(true) },
+                        selected = isMale,
+                    )
+                    Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN/2).dp))
+                    Text(
+                        "Male",
+                        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
+                    )
+                    Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
+                    RadioButton(
+                        onClick = { onSelectGender(false) },
+                        selected = !isMale,
+                    )
+                    Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN/2).dp))
+
+                    Text(
+                        "Female",
+                        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
+                    )
+                }
+
                 Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
-                HabitInput(
-                    "Target Unit",
-                    habitUnit,
-                    "eg. Minute",
-                    focusManager = focusManager,
-                    textLimit = AppConstants.ADD_HABIT_UNIT_TEXT_LIMIT,
-                    onValueChange = onChangeHabitUnit
-                )
-                Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
+
+
+
                 Row {
                     TextButton(
                         onClick = {
-                            onChangeHabitName("")
-                            onChangeHabitTarget("")
-                            onChangeHabitUnit("")
-                            onDismiss()
+                            onAddInformation()
                         },
                         colors = ButtonDefaults.textButtonColors(
-                            containerColor = DarkGray,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = AppConstants.APP_MARGIN.dp)
-                    ) {
-                        Text("Cancel", style = MaterialTheme.typography.labelSmall)
-                    }
-                    TextButton(
-                        onClick = {
-                            onAddHabit()
-                        },
-                        colors = ButtonDefaults.textButtonColors(
-                            containerColor = GreenApple,
+                            containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ), contentPadding = PaddingValues(vertical = 2.dp, horizontal = 2.dp),
                         modifier = Modifier
@@ -173,7 +167,7 @@ fun AddHabitDialog(
 }
 
 @Composable
-fun HabitInput(
+fun InformationInput(
     title: String,
     value: String,
     hint: String,
@@ -182,7 +176,10 @@ fun HabitInput(
     isNumber: Boolean = false,
     onValueChange: (String) -> Unit
 ) {
-    Text(title, style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurface))
+    Text(
+        title,
+        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurface)
+    )
     Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN / 2).dp))
     BasicTextField(
         value = value, onValueChange = {

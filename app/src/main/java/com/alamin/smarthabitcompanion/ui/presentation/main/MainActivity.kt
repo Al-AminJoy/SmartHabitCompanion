@@ -1,11 +1,13 @@
 package com.alamin.smarthabitcompanion.ui.presentation.main
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -29,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import com.alamin.smarthabitcompanion.ui.navigation.Destinations
 import com.alamin.smarthabitcompanion.ui.navigation.NavGraph
 import com.alamin.smarthabitcompanion.ui.navigation.NavigationDestinations
+import com.alamin.smarthabitcompanion.ui.presentation.components.PersonalInformationDialog
 import com.alamin.smarthabitcompanion.ui.theme.SmartHabitCompanionTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -62,28 +66,65 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
+            LaunchedEffect(uiState.message) {
+                val message = uiState.message
+                if (message != null) {
+                    Toast.makeText(this@MainActivity, message.second, Toast.LENGTH_SHORT).show()
+                    viewModel.messageShown()
+                }
+            }
+
+            if (uiState.showPersonalInformationDialog) {
+                PersonalInformationDialog(
+                    modifier = Modifier.fillMaxWidth(),
+                    name = uiState.name,
+                    isMale = uiState.isMale,
+                    onChangeName = {
+                        viewModel.updateName(it)
+                    },
+                    onSelectGender = {
+                        viewModel.updateGender(it)
+                    },
+                    onAddInformation = {
+                        viewModel.insertPersonalInformation{
+                            viewModel.updatePersonalInformationDialog(false)
+                        }
+                    },
+                    onDismiss = {
+                        viewModel.updatePersonalInformationDialog(false)
+                    })
+            }
+
             SmartHabitCompanionTheme() {
                 Scaffold(topBar = {
                     TopAppBar(
                         title = {
-                            if (!uiState.title.equals(NavigationDestinations.HOME.value,true)){
+                            if (!uiState.title.equals(NavigationDestinations.HOME.value, true)) {
                                 Text(uiState.title)
                             }
                         }, actions = {
 
                         }, navigationIcon = {
                             if (!uiState.title.equals(NavigationDestinations.HOME.value, true)) {
-                                selectedNavigationDestination = NavigationDestinations.HABITS.ordinal
+                                selectedNavigationDestination =
+                                    NavigationDestinations.HABITS.ordinal
                                 IconButton(onClick = {
                                     navController.navigateUp()
                                 }) {
-                                    Icon(Icons.Outlined.ArrowBackIosNew, contentDescription = null,tint = MaterialTheme.colorScheme.onPrimary)
+                                    Icon(
+                                        Icons.Outlined.ArrowBackIosNew,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
                                 }
-                            }else{
+                            } else {
                                 selectedNavigationDestination = NavigationDestinations.HOME.ordinal
                             }
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary, titleContentColor = MaterialTheme.colorScheme.onPrimary)
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     )
 
                 }, bottomBar = {
