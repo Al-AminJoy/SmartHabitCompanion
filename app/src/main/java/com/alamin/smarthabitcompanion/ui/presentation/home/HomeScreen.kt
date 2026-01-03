@@ -75,7 +75,7 @@ fun HomeScreen(
         ) {
             if (uiState.weather != null) {
                 WeatherInfo(
-                    isMale = true,
+                    profile = uiState.profile,
                     weather = uiState.weather!!,
                     uiState.initialAnimation,
                     modifier = Modifier

@@ -7,10 +7,12 @@ import com.alamin.smarthabitcompanion.core.utils.Result
 import com.alamin.smarthabitcompanion.core.utils.extension.getMessage
 import com.alamin.smarthabitcompanion.domain.model.CurrentWeatherRequestParam
 import com.alamin.smarthabitcompanion.domain.model.Habit
+import com.alamin.smarthabitcompanion.domain.model.Profile
 import com.alamin.smarthabitcompanion.domain.model.Weather
 import com.alamin.smarthabitcompanion.domain.usecase.CurrentWeatherRequestUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.CurrentWeatherUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.GetHabitsUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.GetProfileUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.HabitCompleteUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.LastSevenDayHabitRecordUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.TodayHabitRecordUseCase
@@ -27,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val getProfileUseCase: GetProfileUseCase,
     private val currentWeatherRequestUseCase: CurrentWeatherRequestUseCase,
     private val currentWeatherUseCase: CurrentWeatherUseCase,
     private val getSevenDayHabitRecordUseCase: LastSevenDayHabitRecordUseCase,
@@ -39,10 +42,24 @@ class HomeViewModel @Inject constructor(
 
 
     init {
+        observeProfile()
         requestCurrentWeather()
         observeWeatherData()
         observeSevenDaysHabits()
         observeTodayHabits()
+    }
+
+    private fun observeProfile() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getProfileUseCase.invoke().stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(), null
+            ).collectLatest { profile ->
+                if (profile != null) {
+                    mutableUIState.update { it.copy(profile = profile) }
+                }
+            }
+        }
     }
 
     private fun observeWeatherData() {
@@ -119,6 +136,7 @@ data class UIState(
     val errorMessage: String? = null,
     val successMessage: String? = null,
     val weather: Weather? = null,
+    val profile: Profile? = null,
     val todayHabits: List<Habit> = arrayListOf(),
     val sevenDayHabits: List<Habit> = arrayListOf(),
     val initialAnimation: Boolean = false,

@@ -117,7 +117,9 @@ fun PersonalInformationDialog(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
-                        onClick = { onSelectGender(true) },
+                        onClick = {
+                            focusManager.clearFocus()
+                            onSelectGender(true) },
                         selected = isMale,
                     )
                     Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN/2).dp))
@@ -127,7 +129,9 @@ fun PersonalInformationDialog(
                     )
                     Spacer(modifier = Modifier.padding(AppConstants.APP_MARGIN.dp))
                     RadioButton(
-                        onClick = { onSelectGender(false) },
+                        onClick = {
+                            focusManager.clearFocus()
+                            onSelectGender(false) },
                         selected = !isMale,
                     )
                     Spacer(modifier = Modifier.padding((AppConstants.APP_MARGIN/2).dp))

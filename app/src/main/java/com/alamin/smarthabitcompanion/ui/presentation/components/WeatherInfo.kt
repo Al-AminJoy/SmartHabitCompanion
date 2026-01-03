@@ -33,12 +33,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alamin.smarthabitcompanion.R
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
+import com.alamin.smarthabitcompanion.domain.model.Profile
 import com.alamin.smarthabitcompanion.domain.model.Weather
 
 @Preview
 @Composable
 fun WeatherInfo(
-    isMale: Boolean = true,
+    profile: Profile? = null,
     weather: Weather = dummyWeather,
     weatherIconVisibility: Boolean = false,
     modifier: Modifier = Modifier
@@ -99,37 +100,39 @@ fun WeatherInfo(
             }
         }
 
-        Column(
-            modifier = Modifier.padding(top = (AppConstants.APP_MARGIN * 4).dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            AnimatedVisibility(
-                visible = weatherIconVisibility, enter = expandHorizontally(
-                    expandFrom = Alignment.End
-                ), exit = ExitTransition.None
+        if (profile != null){
+            Column(
+                modifier = Modifier.padding(top = (AppConstants.APP_MARGIN * 4).dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .border(
-                            2.dp, MaterialTheme.colorScheme.onPrimary,
-                            CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
+                AnimatedVisibility(
+                    visible = weatherIconVisibility, enter = expandHorizontally(
+                        expandFrom = Alignment.End
+                    ), exit = ExitTransition.None
                 ) {
-                    Image(
-                        painter = painterResource(if (isMale) R.drawable.img_pofile_male else R.drawable.img_profile_female),
-                        contentDescription = "Image Not Found",
+                    Box(
                         modifier = Modifier
-                            .clip(CircleShape)
-                    )
+                            .size(36.dp)
+                            .border(
+                                2.dp, MaterialTheme.colorScheme.onPrimary,
+                                CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(if (profile.isMale) R.drawable.img_pofile_male else R.drawable.img_profile_female),
+                            contentDescription = "Image Not Found",
+                            modifier = Modifier
+                                .clip(CircleShape)
+                        )
+                    }
                 }
+                Spacer(modifier = Modifier.size(AppConstants.APP_MARGIN.dp))
+                Text(
+                    text = profile.name,
+                    style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
+                )
             }
-            Spacer(modifier = Modifier.size(AppConstants.APP_MARGIN.dp))
-            Text(
-                text = "Al-Amin Joy",
-                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
-            )
         }
 
 
