@@ -6,6 +6,7 @@ import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.data.local.room.AppDatabase
 import com.alamin.smarthabitcompanion.data.local.room.dao.HabitDao
 import com.alamin.smarthabitcompanion.data.local.room.dao.HabitRecordDao
+import com.alamin.smarthabitcompanion.data.local.room.dao.ProfileDao
 import com.alamin.smarthabitcompanion.data.local.room.dao.WeatherDao
 import dagger.Module
 import dagger.Provides
@@ -37,5 +38,8 @@ object DatabaseModule {
     @Singleton
     fun provideHabitRecordDao(appDatabase: AppDatabase): HabitRecordDao = appDatabase.habitRecordDao()
 
+    @Provides
+    @Singleton
+    fun provideProfileDao(appDatabase: AppDatabase): ProfileDao = appDatabase.profileDao()
 
 }

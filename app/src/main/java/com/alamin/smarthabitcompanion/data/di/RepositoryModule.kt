@@ -1,8 +1,10 @@
 package com.alamin.smarthabitcompanion.data.di
 
 import com.alamin.smarthabitcompanion.data.repository.HabitRepositoryImpl
+import com.alamin.smarthabitcompanion.data.repository.ProfileRepositoryImpl
 import com.alamin.smarthabitcompanion.data.repository.WeatherRepositoryImpl
 import com.alamin.smarthabitcompanion.domain.repository.HabitRepository
+import com.alamin.smarthabitcompanion.domain.repository.ProfileRepository
 import com.alamin.smarthabitcompanion.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
@@ -18,5 +20,8 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindHabitRepository(impl: HabitRepositoryImpl): HabitRepository
+
+    @Binds
+    abstract fun bindProfileRepository(impl: ProfileRepositoryImpl): ProfileRepository
 
 }

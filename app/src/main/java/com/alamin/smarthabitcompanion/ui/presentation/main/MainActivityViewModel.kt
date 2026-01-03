@@ -6,6 +6,7 @@ import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.domain.model.AddHabitParam
 import com.alamin.smarthabitcompanion.domain.model.AddProfileParam
 import com.alamin.smarthabitcompanion.domain.usecase.AddHabitUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.AddProfileUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.preferences.GetFirstRunUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.preferences.SetFirstRunUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
+    private val addProfileUseCase: AddProfileUseCase,
     private val getFirstRunUseCase: GetFirstRunUseCase,
     private val setFirstRunUseCase: SetFirstRunUseCase,
     private val addHabitUseCase: AddHabitUseCase,
@@ -71,6 +73,7 @@ class MainActivityViewModel @Inject constructor(
                 val walkingHabit = AddHabitParam("Walking",30,"Minutes")
                 val wakeUpHabit = AddHabitParam("Breakfast")
                 val profile = AddProfileParam(state.name, state.isMale)
+                addProfileUseCase.invoke(profile)
                 addHabitUseCase.invoke(waterHabit)
                 addHabitUseCase.invoke(walkingHabit)
                 addHabitUseCase.invoke(wakeUpHabit)
