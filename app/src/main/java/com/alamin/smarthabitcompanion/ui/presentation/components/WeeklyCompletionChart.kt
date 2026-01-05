@@ -25,16 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.ui.presentation.model.WeeklyCompletionUiModel
-import com.alamin.smarthabitcompanion.ui.theme.Black
-import com.alamin.smarthabitcompanion.ui.theme.Gray
 
 private const val TAG = "WeeklyCompletionChart"
 

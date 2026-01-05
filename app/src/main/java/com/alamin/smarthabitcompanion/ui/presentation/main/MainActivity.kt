@@ -1,6 +1,9 @@
 package com.alamin.smarthabitcompanion.ui.presentation.main
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -71,6 +74,15 @@ class MainActivity : ComponentActivity() {
                 if (message != null) {
                     Toast.makeText(this@MainActivity, message.second, Toast.LENGTH_SHORT).show()
                     viewModel.messageShown()
+                }
+            }
+
+            LaunchedEffect(Unit){
+                if (!viewModel.hasAlarmPermission()){
+                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                         val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                         startActivity(intent)
+                     }
                 }
             }
 

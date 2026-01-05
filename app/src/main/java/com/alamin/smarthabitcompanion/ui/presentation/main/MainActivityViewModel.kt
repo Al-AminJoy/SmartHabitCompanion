@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
 import com.alamin.smarthabitcompanion.domain.model.AddHabitParam
 import com.alamin.smarthabitcompanion.domain.model.AddProfileParam
+import com.alamin.smarthabitcompanion.domain.repository.AlarmRepository
 import com.alamin.smarthabitcompanion.domain.usecase.AddHabitUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.AddProfileUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.preferences.GetFirstRunUseCase
@@ -23,6 +24,7 @@ class MainActivityViewModel @Inject constructor(
     private val getFirstRunUseCase: GetFirstRunUseCase,
     private val setFirstRunUseCase: SetFirstRunUseCase,
     private val addHabitUseCase: AddHabitUseCase,
+    private val alarmRepository: AlarmRepository
 ) : ViewModel() {
     private val mutableUiState = MutableStateFlow(UISate())
 
@@ -58,6 +60,10 @@ class MainActivityViewModel @Inject constructor(
 
     fun messageShown() {
         mutableUiState.update { it.copy(message = null) }
+    }
+
+    fun hasAlarmPermission(): Boolean{
+        return alarmRepository.hasPermission()
     }
 
     fun insertPersonalInformation(onInsert: () -> Unit) {
