@@ -41,7 +41,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-            notificationManager.notify(2, builder.build())
+            notificationManager.notify(1, builder.build())
         }
     }
 }

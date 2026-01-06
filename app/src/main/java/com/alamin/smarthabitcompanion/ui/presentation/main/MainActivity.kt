@@ -77,13 +77,19 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            LaunchedEffect(Unit){
-                if (!viewModel.hasAlarmPermission()){
-                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                         val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                         startActivity(intent)
-                     }
+            LaunchedEffect(uiState.showAlarmPermissionDialog){
+                if (uiState.showAlarmPermissionDialog){
+                    if (!viewModel.hasAlarmPermission()){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                            startActivity(intent)
+                            viewModel.updateAlarmPermissionDialog(false)
+                        }
+                    }else{
+                        viewModel.scheduleAlarm()
+                    }
                 }
+
             }
 
             if (uiState.showPersonalInformationDialog) {
