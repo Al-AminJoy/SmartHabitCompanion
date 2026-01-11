@@ -13,6 +13,10 @@ object AppConstants {
     const val ADD_HABIT_TARGET_TEXT_LIMIT = 6
     const val ADD_HABIT_UNIT_TEXT_LIMIT = 16
 
+    const val CHANNEL_ID = "habit_reminder"
+
+    const val EXTRA_MESSAGE = "EXTRA_MESSAGE"
+
     val chartColor = arrayListOf<Color>(
         Color(0xFF003f5c),
         Color(0xFF374c80),

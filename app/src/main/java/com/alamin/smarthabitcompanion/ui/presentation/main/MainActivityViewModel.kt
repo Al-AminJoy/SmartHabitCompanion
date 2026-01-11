@@ -1,5 +1,6 @@
 package com.alamin.smarthabitcompanion.ui.presentation.main
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alamin.smarthabitcompanion.core.utils.AppConstants
@@ -9,6 +10,8 @@ import com.alamin.smarthabitcompanion.domain.model.AlarmItem
 import com.alamin.smarthabitcompanion.domain.repository.AlarmRepository
 import com.alamin.smarthabitcompanion.domain.usecase.AddHabitUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.AddProfileUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.AlarmPermissionCheckUseCase
+import com.alamin.smarthabitcompanion.domain.usecase.AlarmSchedulerUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.preferences.GetFirstRunUseCase
 import com.alamin.smarthabitcompanion.domain.usecase.preferences.SetFirstRunUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +29,8 @@ class MainActivityViewModel @Inject constructor(
     private val getFirstRunUseCase: GetFirstRunUseCase,
     private val setFirstRunUseCase: SetFirstRunUseCase,
     private val addHabitUseCase: AddHabitUseCase,
-    private val alarmRepository: AlarmRepository
+    private val alarmPermissionCheckUseCase: AlarmPermissionCheckUseCase,
+    private val alarmSchedulerUseCase: AlarmSchedulerUseCase
 ) : ViewModel() {
     private val mutableUiState = MutableStateFlow(UISate())
 
@@ -72,7 +76,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun hasAlarmPermission(): Boolean {
-        return alarmRepository.hasPermission()
+        return alarmPermissionCheckUseCase.invoke()
     }
 
     fun insertPersonalInformation(onInsert: () -> Unit) {
@@ -100,21 +104,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun scheduleAlarm() {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 23) // 11 PM
-            set(Calendar.MINUTE, 38)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
-        val triggerAtMillis = calendar.timeInMillis
-        alarmRepository.scheduleAlarm(
-            AlarmItem(
-                1,
-                message = "Night Reminder",
-                time = triggerAtMillis
-            )
-        )
+        alarmSchedulerUseCase.invoke()
     }
 
 }
